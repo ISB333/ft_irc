@@ -19,5 +19,6 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
+#include <cstddef>
 
-//TODO: At the very end of development, check the need for each library and put them away again..
+//TODO: At the very end of development, check the need for each library and put them away again.

@@ -12,7 +12,7 @@
 
 
 NAME		= ircserv
-CFLAGS		+= -Wall -Wextra -Werror -I./includes -std=c++98
+CXXFLAGS		+= -Wall -Wextra -Werror -I./includes -std=c++98
 CXX			= c++
 
 HIDE_CURSOR		= \033[?25l
@@ -28,12 +28,13 @@ RED = \033[31;1m
 WHITE = \033[0;37m
 YELLOW = \033[0;33m
 
-SRCS = ./srcs/
+SRCS := ./srcs/main.cpp
+OBJS := $(SRCS:.cpp=.o)
 
 all : $(NAME)
 
 $(NAME) : $(OBJS)
-	@$(CXX) $(CFLAGS) $(OBJS) -o $(NAME)
+	@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 
 $(OBJ_DIR)/%.o : %.c
 	@mkdir -p $(@D)
@@ -44,8 +45,8 @@ $(OBJ_DIR)/%.o : %.c
 
 
 clean :
-	@rm -rf $(OBJ_DIR) $(DEPFILES)
-	@$(MAKE) -C $(LIBFT_DIR) fclean --no-print-directory
+# @rm -rf $(OBJ_DIR) $(DEPFILES)
+	rm -rf $(OBJS)
 	@echo "$(DARK_GREEN)\nEvery files are cleaned$(DEFAULT)"
 
 fclean : clean

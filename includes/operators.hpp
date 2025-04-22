@@ -1,14 +1,15 @@
 /* ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
 ** │  Project : ft_irc – IRC Server                                                                │
 ** └───────────────────────────────────────────────────────────────────────────────────────────────┘
-** File       : includes/ircServ.hpp
-** Author     : adesille, aheitz
-** Created    : 2025-04-21
+** File       : includes/operators.hpp
+** Author     : aheitz
+** Created    : 2025-04-22
 ** Edited     : 2025-04-22
-** Description: The inclusion head for the project
+** Description: The complete list of operators redefined by aheitz autism, used by the project
 */
 
 #pragma once
 
-#include "libraries.hpp"
-#include "operators.hpp"
+#define eq      ==
+#define greater >
+#define lesser  <

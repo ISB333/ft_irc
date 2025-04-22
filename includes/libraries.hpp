@@ -1,14 +1,23 @@
 /* ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
 ** │  Project : ft_irc – IRC Server                                                                │
 ** └───────────────────────────────────────────────────────────────────────────────────────────────┘
-** File       : includes/ircServ.hpp
-** Author     : adesille, aheitz
-** Created    : 2025-04-21
+** File       : includes/libraries.hpp
+** Author     : aheitz
+** Created    : 2025-04-22
 ** Edited     : 2025-04-22
-** Description: The inclusion head for the project
+** Description: The complete list of libraries used by the project
 */
 
 #pragma once
 
-#include "libraries.hpp"
-#include "operators.hpp"
+#include <cstdlib>
+#include <cerrno>
+#include <cstddef>
+#include <cstdlib>
+#include <exception>
+#include <iostream>
+#include <ostream>
+#include <stdexcept>
+#include <string>
+
+//TODO: At the very end of development, check the need for each library and put them away again..

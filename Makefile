@@ -6,13 +6,13 @@
 #    By: adesille <adesille@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/21 11:35:08 by adesille          #+#    #+#              #
-#    Updated: 2025/04/21 11:52:02 by adesille         ###   ########.fr        #
+#    Updated: 2025/04/23 14:09:27 by adesille         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 
 NAME		= ircserv
-CXXFLAGS		+= -Wall -Wextra -Werror -I./includes -std=c++98
+CXXFLAGS		+= -Wall -Wextra -Werror -I./includes -I./includes/Classes -std=c++98
 CXX			= c++
 
 HIDE_CURSOR		= \033[?25l
@@ -28,20 +28,23 @@ RED = \033[31;1m
 WHITE = \033[0;37m
 YELLOW = \033[0;33m
 
-SRCS := ./srcs/main.cpp
-OBJS := $(SRCS:.cpp=.o)
+SRC = ./srcs
+OBJ_DIR = .obj
+
+SRCS := $(SRC)/main.cpp $(SRC)/Server.cpp $(SRC)/Client.cpp $(SRC)/Channel.cpp 
+OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
 
 all : $(NAME)
 
 $(NAME) : $(OBJS)
 	@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 
-$(OBJ_DIR)/%.o : %.c
+$(OBJ_DIR)/%.o : %.cpp
 	@mkdir -p $(@D)
-	@if [ ! -f .obj/srcs/*.o ]; then \
-	    echo "$(YELLOW)\nCompiling ircserv files...$(DEFAULT)"; \
+	@if [ ! -z "$(wildcard .obj/*.o)" ]; then \
+		echo "$(YELLOW)\nCompiling ircserv files...$(DEFAULT)"; \
 	fi
-	@$(CXX) $(OFLAGS) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 
 clean :

@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <cstring>
+#include <map>
 
 int main() {
     int server_fd, client_fd;
@@ -51,17 +52,62 @@ int main() {
 
     std::cout << "Client connected" << std::endl;
 
-    // Read data from the client
-    ssize_t bytes_read = read(client_fd, buffer, sizeof(buffer) - 1);
-    if (bytes_read < 0) {
-        perror("read");
-        close(client_fd);
-        close(server_fd);
-        return 1;
-    }
+    std::map<int, std::string> client_buffers; // Moved outside loop
+    char temp[512];
+    bool should_exit = false;
 
-    buffer[bytes_read] = '\0'; // Null-terminate the buffer
-    std::cout << "Received message: " << buffer << std::endl;
+    do {
+        // Read without blocking (buffer may contain partial command)
+        ssize_t bytes_read = recv(client_fd, temp, sizeof(temp), 0);
+        
+        if(bytes_read > 0) {
+            // Append to persistent buffer
+            client_buffers[client_fd].append(temp, bytes_read);
+            
+            // Process complete commands
+            size_t crlf_pos;
+            while((crlf_pos = client_buffers[client_fd].find("\r\n")) != std::string::npos) {
+                std::string full_cmd = client_buffers[client_fd].substr(0, crlf_pos);
+                
+				std::cout << full_cmd << std::endl;
+                // Command handling (case-sensitive)
+				if(full_cmd == "exit") {
+					std::cout << "Closing connection" << std::endl;
+
+					// (A) Send final acknowledgment to client
+					const char* response = "SERVER: Closing connection\r\n";
+					send(client_fd, response, strlen(response), 0);
+
+					// (B) Partial socket shutdown
+					shutdown(client_fd, SHUT_WR);  // FIN sent to client
+
+					// (C) Drain remaining data (prevents RST)
+					// char drain_buffer[128];
+					// while(recv(client_fd, drain_buffer, sizeof(drain_buffer), 0) > 0) {
+					// 	; // Discard leftover data
+					// }
+
+					should_exit = true;
+    				close(client_fd);
+					break;
+				}
+
+                // Echo back to client (optional)
+                send(client_fd, (full_cmd + "\r\n").c_str(), full_cmd.length() + 2, 0);
+                
+                // Remove processed command from buffer
+                client_buffers[client_fd].erase(0, crlf_pos + 2);
+            }
+        }
+        else if(bytes_read == 0) {
+            std::cout << "Client disconnected" << std::endl;
+            break;
+        }
+        else {
+            perror("recv error");
+            break;
+        }
+    } while(!should_exit);
 
     // Close the client and server sockets
     close(client_fd);
@@ -69,4 +115,3 @@ int main() {
 
     return 0;
 }
-

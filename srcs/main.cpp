@@ -40,6 +40,9 @@ int main(int argc, char *argv[]) {
         string password = argv[2];
         if (password.empty())   throw invalid_argument("A password should be defined");
 
+		Server server(port, password);
+		server.run();
+		// ircServ(port, password);
         exit(EXIT_SUCCESS);
     } catch (const exception &error) {
         cerr << "SERVER SHUTDOWN - Error encountered\n" << error.what() << endl;

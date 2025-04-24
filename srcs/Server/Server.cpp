@@ -12,7 +12,7 @@
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-Server::Server(int port, const std::string& password) : port(port), password(password) { setupSocket(); }
+Server::Server(int port, const std::string& password) : password(password), port(port) { setupSocket(); }
 Server::~Server() { };
 
 /*

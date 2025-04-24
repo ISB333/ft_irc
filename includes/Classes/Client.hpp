@@ -18,7 +18,7 @@
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-// using namespace std;
+using namespace std;
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
@@ -30,19 +30,20 @@ class Channel;
  */
 class Client {
     public:
-        int fd;
-        std::string nickname;
-        std::string username;
-        std::string realname;
-        std::string awayMessage;
-        std::map<std::string, Channel*> channels;
-        std::string buffer;
-        bool authenticated;
+        map<std::string, Channel*>  channels;
+        string                      nickname;
+        string                      username;
+        string                      realname;
+        string                      awayMessage;
+        string                      buffer;
+        int                         fd;
+        bool                        authenticated;
 
         Client(int fd);
         ~Client();
-        void sendReply(const std::string& message);
-        void handleCommand(const std::string& command, const std::vector<std::string>& args);
+
+        void                        sendReply(const std::string& message);
+        void                        handleCommand(const std::string& command, const std::vector<std::string>& args);
 };
 
 // class Client {

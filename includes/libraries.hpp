@@ -4,7 +4,7 @@
 ** File       : includes/libraries.hpp
 ** Author     : aheitz
 ** Created    : 2025-04-22
-** Edited     : 2025-04-22
+** Edited     : 2025-04-23
 ** Description: The complete list of libraries used by the project
 */
 
@@ -14,7 +14,6 @@
 #include <cstdio>
 #include <cerrno>
 #include <cstddef>
-#include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <ostream>
@@ -34,6 +33,5 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
-
 
 //TODO: At the very end of development, check the need for each library and put them away again.

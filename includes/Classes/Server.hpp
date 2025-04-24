@@ -1,14 +1,12 @@
-/******************************************************************************/
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: adesille <adesille@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/23 13:36:39 by adesille          #+#    #+#             */
-/*   Updated: 2025/04/24 09:48:47 by adesille         ###   ########.fr       */
-/*                                                                            */
-/******************************************************************************/
+/* ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
+** │  Project : ft_irc – IRC Server                                                                │
+** └───────────────────────────────────────────────────────────────────────────────────────────────┘
+** File       : includes/Classes/Server.hpp
+** Author     : adesille, aheitz
+** Created    : 2025-04-23
+** Edited     : 2025-04-24
+** Description: Every server deserves a structure to track their data
+*/
 
 #pragma  once
 
@@ -26,7 +24,7 @@ class Server {
 	private:
 		vector<struct pollfd>		pollfds;
 		map<int, Client*>			clients;
-		map<std::string, Channel*>	channels;
+		map<std::string, Channel*>	_channels;
 		struct sockaddr_in 			serverAddr;
 		std::string 				password;
 		int							port;
@@ -44,4 +42,5 @@ class Server {
 		~Server();
 
 		void						run();
+		Channel *getChannel(const std::string &channelName) const;
 };

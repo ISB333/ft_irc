@@ -9,7 +9,6 @@
 */
 
 #include "ircServ.hpp"
-#include <iomanip>
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
@@ -22,17 +21,17 @@ using namespace std;
  * 
  * @param code the command's execution code
  * @param nickname the target client's name
- * @param channel the channel concerned by the command
+ * @param middle any intermediate field for the response (e.g. a channel)
  * @param text the command's textual argument
  * @return string the command's total concatenation for the client's output
  */
-string formatReply(const int code, const string &nickname, const string &channel, const string &text) {
+string formatReply(const int code, const string &nickname, const string &middle, const string &text) {
     ostringstream oss;
 
     oss << ":"  << SERVER_NAME
         << " "  << setw(3) << setfill('0') << code << setfill(' ')
         << " "  << nickname
-        << " "  << channel
+        << " "  << middle
         << " :" << text;
     return oss.str();
 };

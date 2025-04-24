@@ -11,6 +11,8 @@
 
 #pragma once
 
+//FIXME: Remove ALL namespaces from headers.
+
 #include "functions.hpp"
 #include "libraries.hpp"
 #include "operators.hpp"

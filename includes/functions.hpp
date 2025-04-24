@@ -18,5 +18,5 @@
 
 std::string formatReply(const int         code,
                         const std::string &nickname,
-                        const std::string &channel,
+                        const std::string &middle,
                         const std::string &text);

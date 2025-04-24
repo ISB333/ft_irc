@@ -33,5 +33,6 @@
 #include <netinet/tcp.h>
 #include <iomanip>
 #include <sstream>
+#include <algorithm>
 
 //TODO: At the very end of development, check the need for each library and put them away again.

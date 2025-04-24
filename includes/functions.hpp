@@ -1,29 +1,22 @@
-
 /* ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
 ** │  Project : ft_irc – IRC Server                                                                │
 ** └───────────────────────────────────────────────────────────────────────────────────────────────┘
-** File       : includes/ircServ.hpp
-** Author     : adesille, aheitz
-** Created    : 2025-04-21
+** File       : includes/functions.hpp
+** Author     : aheitz
+** Created    : 2025-04-24
 ** Edited     : 2025-04-24
-** Description: The inclusion head for the project
+** Description: The complete list of functions used by the project
 */
 
 #pragma once
 
-#include "functions.hpp"
+// │────────────────────────────────────────────────────────────────────────────────────────────│ //
+
 #include "libraries.hpp"
-#include "operators.hpp"
-#include "macros.hpp"
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-class Client;
-class Channel;
-class Server;
-
-#include "Classes/Client.hpp"
-#include "Classes/Server.hpp"
-#include "Classes/Channel.hpp"
-
-#include "Structs/Command.hpp"
+std::string formatReply(const int         code,
+                        const std::string &nickname,
+                        const std::string &channel,
+                        const std::string &text);

@@ -1,66 +1,19 @@
-/******************************************************************************/
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: adesille <adesille@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/23 11:06:23 by adesille          #+#    #+#             */
-/*   Updated: 2025/04/24 10:05:50 by adesille         ###   ########.fr       */
-/*                                                                            */
-/******************************************************************************/
+/* ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
+** │  Project : ft_irc – IRC Server                                                                │
+** └───────────────────────────────────────────────────────────────────────────────────────────────┘
+** File       : srcs/Server/Server.cpp
+** Author     : adesille, aheitz
+** Created    : 2025-04-23
+** Edited     : 2025-04-24
+** Description: Definitions of server functions
+*/
 
-#include "Server.hpp"
+#include "ircServ.hpp"
+
+// │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
 Server::Server(int port, const std::string& password) : port(port), password(password) { setupSocket(); }
 Server::~Server() { };
-
-/*
-*	This function initializes the server's networking capabilities (creating like a mailbox):
-*	1. Creates a socket for network communication
-*	2. Configures socket options for reuse and non-blocking mode
-*	3. Sets up server address (IPv4, any available interface, specified port)
-*	4. Binds the socket to the address
-*	5. Starts listening for incoming connections
-*	6. Adds the server socket to poll monitoring
-*/
-void	Server::setupSocket() {
-	// Create an IPv4 (AdressFamily_InterNET) TCP (SOCKet_STREAM) socket
-	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-	if (serverSocket < 0) {
-		perror("socket");
-		exit(1);
-	}
-	int opt = 1;
-	// SO_REUSEADDR allows the socket to be bound to an address that's in TIME_WAIT state
-	// This prevents "Address already in use" errors when restarting the server
-	setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-
-	// Set socket to non-blocking mode - operations won't wait for completion
-	// This allows the server to handle multiple clients without blocking
-	fcntl(serverSocket, F_SETFL, O_NONBLOCK);
-
-	// Initialize server address structure
-	memset(&serverAddr, 0, sizeof(serverAddr));
-	serverAddr.sin_family = AF_INET;          // IPv4 protocol
-	serverAddr.sin_addr.s_addr = INADDR_ANY;  // Accept connections on any interface
-	serverAddr.sin_port = htons(port);        // Convert port to network byte order
-
-	// Bind the socket to the configured address and port
-	if (bind(serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
-		perror("bind");
-		exit(1);
-	}
-
-	// Start listening for incoming connections with a backlog queue of 5
-	listen(serverSocket, 5);
-
-	// Add the server socket to the pollfd vector for monitoring incoming connections
-	struct pollfd pfd;
-	pfd.fd = serverSocket;
-	pfd.events = POLLIN;  // Monitor for incoming data (connection requests)
-	pollfds.push_back(pfd);
-}
 
 /*
 *	This function handles new client connections to the server:

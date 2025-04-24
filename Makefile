@@ -31,7 +31,11 @@ YELLOW = \033[0;33m
 SRC = ./srcs
 OBJ_DIR = .obj
 
-SRCS := $(SRC)/main.cpp $(SRC)/Server.cpp $(SRC)/Client.cpp $(SRC)/Channel.cpp 
+SRCS := $(SRC)/main.cpp
+		$(SRC)/Server/Server.cpp
+		$(SRC)/Server/setupSocket.cpp
+		$(SRC)/Client.cpp
+		$(SRC)/Channel.cpp 
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
 
 all : $(NAME)

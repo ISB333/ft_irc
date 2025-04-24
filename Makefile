@@ -6,13 +6,13 @@
 #    By: adesille <adesille@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/21 11:35:08 by adesille          #+#    #+#              #
-#    Updated: 2025/04/23 14:09:27 by adesille         ###   ########.fr        #
+#    Updated: 2025/04/24 13:10:31 by adesille         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 
 NAME		= ircserv
-CXXFLAGS		+= -Wall -Wextra -Werror -I./includes -I./includes/Classes -std=c++98
+CXXFLAGS		+= -Wall -Wextra -Werror -I./includes -I./includes/Classes -I./includes/Structs --std=c++98
 CXX			= c++
 
 HIDE_CURSOR		= \033[?25l
@@ -29,13 +29,17 @@ WHITE = \033[0;37m
 YELLOW = \033[0;33m
 
 SRC = ./srcs
+SERVER = ./srcs/Server
+COMMAND = ./srcs/Command
 OBJ_DIR = .obj
 
-SRCS := $(SRC)/main.cpp
-		$(SRC)/Server/Server.cpp
-		$(SRC)/Server/setupSocket.cpp
-		$(SRC)/Client.cpp
-		$(SRC)/Channel.cpp 
+SRCS := $(SRC)/main.cpp \
+		$(SERVER)/Server.cpp \
+		$(SERVER)/setupSocket.cpp \
+		$(SRC)/Client.cpp \
+		$(SRC)/Channel.cpp \
+		$(COMMAND)/parseLine.cpp 
+
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
 
 all : $(NAME)
@@ -59,7 +63,9 @@ clean :
 fclean : clean
 	@rm -f $(NAME)
 
-	
+re : fclean all
+
+
 -include $(DEPFILES)
 
 disco:

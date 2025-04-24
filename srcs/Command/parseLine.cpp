@@ -23,8 +23,8 @@ using namespace std;
  * 
  * @param line The line to be processed
  * @return Command The command containing the name and arguments
- */
- inline Command parseLine(std::string line) {
+*/
+Command parseLine(std::string line) {
     Command result;
     size_t  nextSpace;
 

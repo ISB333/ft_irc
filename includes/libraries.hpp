@@ -36,5 +36,7 @@
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
+#include <cctype>
+#include <limits>
 
 //TODO: At the very end of development, check the need for each library and put them away again.

@@ -1,33 +1,28 @@
-
 /* ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
 ** │  Project : ft_irc – IRC Server                                                                │
 ** └───────────────────────────────────────────────────────────────────────────────────────────────┘
-** File       : includes/ircServ.hpp
-** Author     : adesille, aheitz
-** Created    : 2025-04-21
+** File       : srcs/Server/getChannel.cpp
+** Author     : aheitz
+** Created    : 2025-04-24
 ** Edited     : 2025-04-24
-** Description: The inclusion head for the project
+** Description: Definition of getChannel's server function
 */
 
-#pragma once
-
-//FIXME: Remove ALL namespaces from headers.
-
-#include "functions.hpp"
-#include "libraries.hpp"
-#include "operators.hpp"
-#include "macros.hpp"
+#include "ircServ.hpp"
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-class Client;
-class Channel;
-class Server;
+using namespace std;
 
-#include "Classes/Client.hpp"
-#include "Classes/Server.hpp"
-#include "Classes/Channel.hpp"
-#include "Classes/Handler.hpp"
-#include "Classes/Replies.hpp"
+/**
+ * @brief Searches the pointer to a channel in the server
+ * 
+ * @param name The name of the channel to search for
+ * @return Channel* The pointer to this channel
+ */
+Channel *Server::getChannel(const string &name) const {
+    const map<string, Channel*>::const_iterator occurrence = _channels.find(name);
 
-#include "Structs/Command.hpp"
+    if (occurrence eq _channels.end())  throw out_of_range("Channel not found: " + name);
+    return occurrence->second;
+};

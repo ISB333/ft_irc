@@ -1,16 +1,12 @@
 /* ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
 ** │  Project : ft_irc – IRC Server                                                                │
 ** └───────────────────────────────────────────────────────────────────────────────────────────────┘
-** File       : includes/Classes/Server.hpp
-** Author     : adesille, aheitz
-** Created    : 2025-04-23
+** File       : srcs/Command/formatReply.cpp
+** Author     : aheitz
+** Created    : 2025-04-24
 ** Edited     : 2025-04-24
-** Description: Every server deserves a structure to track their data
+** Description: Function definition for efficiently concatenating a response to the server
 */
-
-#pragma  once
-
-// │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
 #include "ircServ.hpp"
 
@@ -20,30 +16,22 @@ using namespace std;
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-class Handler;
+/**
+ * @brief Intelligently formats the set of fields for the client's output buffer
+ * 
+ * @param code the command's execution code
+ * @param nickname the target client's name
+ * @param middle any intermediate field for the response (e.g. a channel)
+ * @param text the command's textual argument
+ * @return string the command's total concatenation for the client's output
+ */
+string formatReply(const int code, const string &nickname, const string &middle, const string &text) {
+    ostringstream oss;
 
-class Server {
-	private:
-		vector<struct pollfd>		pollfds;
-		map<int, Client*>			clients;
-		map<std::string, Channel*>	_channels;
-		struct sockaddr_in 			serverAddr;
-		std::string 				password;
-		int							port;
-		int							serverSocket;
-		Handler*					handler;
-
-		void						setupSocket();
-		void						handleNewConnection();
-		void						handleClientData(int index);
-		void						processCommand(Client* client, const std::string& message);
-		void						removeClient(int fd);
-		void						broadcastMessage(const std::string& message, Client* sender, Channel* channel = NULL);
-
-	public:
-		Server(int port, const std::string& password);
-		~Server();
-
-		void						run();
-		Channel *getChannel(const std::string &channelName) const;
+    oss << ":"  << SERVER_NAME
+        << " "  << setw(3) << setfill('0') << code << setfill(' ')
+        << " "  << nickname
+        << " "  << middle
+        << " :" << text;
+    return oss.str();
 };

@@ -33,5 +33,8 @@
 #include <fcntl.h>
 #include <asm-generic/socket.h>
 #include <netinet/tcp.h>
+#include <iomanip>
+#include <sstream>
+#include <algorithm>
 
 //TODO: At the very end of development, check the need for each library and put them away again.

@@ -20,6 +20,8 @@ using namespace std;
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
+class Handler;
+
 class Server {
 	private:
 		vector<struct pollfd>		pollfds;
@@ -29,6 +31,7 @@ class Server {
 		std::string 				password;
 		int							port;
 		int							serverSocket;
+		Handler*					handler;
 
 		void						setupSocket();
 		void						handleNewConnection();

@@ -12,8 +12,21 @@
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-Server::Server(int port, const std::string& password) : password(password), port(port) { setupSocket(); }
-Server::~Server() { };
+Server::Server(int port, const std::string& password) : password(password), port(port) {
+	setupSocket();
+	handler = new Handler(*this);
+}
+
+Server::~Server() {
+    for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
+        delete it->second;
+    }
+    for (std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); ++it) {
+        delete it->second;
+    }
+	delete handler;
+    close(serverSocket);
+};
 
 /*
 *	This function handles new client connections to the server:
@@ -124,8 +137,19 @@ void Server::processCommand(Client* client, const std::string& message) {
     	// Command parsing and processing logic here
 	}
 	*/
-    std::cout << "Received: " << message << std::endl;
-    client->sendReply(":" + client->nickname + "!" + client->username + "@localhost " + message + "\r\n");
+    // std::cout << "Received: " << message << std::endl;
+	// std::cout << "Received: ";
+	// Command cmd = parseLine(message);
+	// if (!cmd.name.empty())
+	// 	std::cout << "name: " << cmd.name << std::endl;
+	// else
+	// 	std::cout << "name empty" << std::endl;
+	// if (!cmd.argv.empty())
+	// 	std::cout << "cmd: " << cmd.argv[0] << std::endl;
+	// else
+	// 	std::cout << "cmd empty" << std::endl;
+    // client->sendReply(":" + client->nickname + "!" + client->username + "@localhost " + message + "\r\n");
+	handler->dispatchCommand(client, message);
 }
 
 void Server::removeClient(int fd) {

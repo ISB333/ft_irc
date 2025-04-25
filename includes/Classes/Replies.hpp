@@ -1,12 +1,12 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
+/*   Replies.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adesille <adesille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/23 13:36:39 by adesille          #+#    #+#             */
-/*   Updated: 2025/04/25 10:37:56 by adesille         ###   ########.fr       */
+/*   Created: 2025/04/25 10:22:55 by adesille          #+#    #+#             */
+/*   Updated: 2025/04/25 10:27:54 by adesille         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -22,29 +22,17 @@ using namespace std;
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-class Handler;
-
-class Server {
-	private:
-		vector<struct pollfd>		pollfds;
-		map<int, Client*>			clients;
-		map<std::string, Channel*>	channels;
-		struct sockaddr_in 			serverAddr;
-		std::string 				password;
-		int							port;
-		int							serverSocket;
-		Handler*					handler;
-
-		void						setupSocket();
-		void						handleNewConnection();
-		void						handleClientData(int index);
-		void						processCommand(Client* client, const std::string& message);
-		void						removeClient(int fd);
-		void						broadcastMessage(const std::string& message, Client* sender, Channel* channel = NULL);
-
+class Replies {
 	public:
-		Server(int port, const std::string& password);
-		~Server();
+		static std::string ERR_UNKNOWNCOMMAND(const std::string& nickname, const std::string& command) {
+			return ":server 421 " + nickname + " " + command + " :Unknown command\r\n";
+		}
 
-		void						run();
+		static std::string ERR_ERRONEUSNICKNAME(const std::string& nickname) {
+			return ":server 432 " + nickname + " :Erroneous nickname\r\n";
+		}
+
+		static std::string ERR_NICKNAMEINUSE(const std::string& nickname) {
+			return ":server 433 " + nickname + " :Nickname is already in use\r\n";
+		}
 };

@@ -15,10 +15,12 @@
 #include <cerrno>
 #include <cstddef>
 #include <exception>
+#include <algorithm>
 #include <iostream>
 #include <ostream>
 #include <stdexcept>
 #include <string>
+#include <sstream>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

@@ -20,5 +20,7 @@
 #include "Classes/Client.hpp"
 #include "Classes/Server.hpp"
 #include "Classes/Channel.hpp"
+#include "Classes/Handler.hpp"
+#include "Classes/Replies.hpp"
 
 #include "Structs/Command.hpp"

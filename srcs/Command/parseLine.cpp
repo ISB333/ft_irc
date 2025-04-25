@@ -66,7 +66,7 @@ Command parseLine(std::string line) {
 
         nextSpace = line.find(SPACE);
         if (nextSpace eq string::npos)
-            result.argv.push_back(line);
+			{ result.argv.push_back(line); break; }
         else {
             result.argv.push_back(line.substr(0, nextSpace));
             line.erase(0, nextSpace + 1);

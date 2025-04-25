@@ -6,13 +6,13 @@
 #    By: adesille <adesille@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/21 11:35:08 by adesille          #+#    #+#              #
-#    Updated: 2025/04/24 13:10:31 by adesille         ###   ########.fr        #
+#    Updated: 2025/04/25 10:39:16 by adesille         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 
 NAME		= ircserv
-CXXFLAGS		+= -Wall -Wextra -Werror -I./includes -I./includes/Classes -I./includes/Structs --std=c++98
+CXXFLAGS		+= -Wall -Wextra -I./includes -I./includes/Classes -I./includes/Structs --std=c++98
 CXX			= c++
 
 HIDE_CURSOR		= \033[?25l
@@ -38,7 +38,8 @@ SRCS := $(SRC)/main.cpp \
 		$(SERVER)/setupSocket.cpp \
 		$(SRC)/Client.cpp \
 		$(SRC)/Channel.cpp \
-		$(COMMAND)/parseLine.cpp 
+		$(COMMAND)/parseLine.cpp \
+		$(COMMAND)/Handler.cpp 
 
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
 

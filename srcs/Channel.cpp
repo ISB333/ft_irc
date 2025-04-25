@@ -1,26 +1,24 @@
-/******************************************************************************/
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Channel.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: adesille <adesille@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/23 13:49:33 by adesille          #+#    #+#             */
-/*   Updated: 2025/04/23 14:01:49 by adesille         ###   ########.fr       */
-/*                                                                            */
-/******************************************************************************/
+/* ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
+** │  Project : ft_irc – IRC Server                                                                │
+** └───────────────────────────────────────────────────────────────────────────────────────────────┘
+** File       : srcs/Channel.cpp
+** Author     : adesille, aheitz
+** Created    : 2025-04-23
+** Edited     : 2025-04-25
+** Description: Channel class member functions
+*/
 
 #include "ircServ.hpp"
 
 Channel::Channel(const std::string& name) : name(name), inviteOnly(false), topicRestricted(false), userLimit(-1) {}
 
 void Channel::addClient(Client* client) {
-    members[client->fd] = client;
+    members[client->getFileDescriptor()] = client;
 }
 
 void Channel::removeClient(Client* client) {
-    members.erase(client->fd);
-    operators.erase(client->fd);
+    members.erase(client->getFileDescriptor());
+    operators.erase(client->getFileDescriptor());
 }
 
 void Channel::setMode(char mode, bool set, const std::string& arg) {
@@ -37,3 +35,14 @@ void Channel::setMode(char mode, bool set, const std::string& arg) {
     }
 
 }
+
+/**
+ * @brief Checks whether a client's file descriptor is registered in a channel
+ * 
+ * @param clientFd The client to check
+ * @return true If the client is indeed registered in the channel
+ * @return false If passed fd is not present in the channel
+ */
+bool Channel::isMember(const int clientFd) const {
+    return members.count(clientFd);
+};

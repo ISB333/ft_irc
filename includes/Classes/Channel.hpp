@@ -1,14 +1,12 @@
-/******************************************************************************/
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Channel.hpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: adesille <adesille@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/23 13:47:58 by adesille          #+#    #+#             */
-/*   Updated: 2025/04/24 09:46:52 by adesille         ###   ########.fr       */
-/*                                                                            */
-/******************************************************************************/
+/* ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
+** │  Project : ft_irc – IRC Server                                                                │
+** └───────────────────────────────────────────────────────────────────────────────────────────────┘
+** File       : includes/Classes/Server.hpp
+** Author     : adesille, aheitz
+** Created    : 2025-04-23
+** Edited     : 2025-04-25
+** Description: Every channel deserves a structure to track their data
+*/
 
 #pragma once
 
@@ -41,4 +39,6 @@ class Channel {
 		void				addClient(Client* client);
 		void				removeClient(Client* client);
 		void				setMode(char mode, bool set, const std::string& arg = "");
+
+		bool				isMember(const int clientFd) const;
 };

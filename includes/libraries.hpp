@@ -38,5 +38,6 @@
 #include <algorithm>
 #include <cctype>
 #include <limits>
+#include <set>
 
 //TODO: At the very end of development, check the need for each library and put them away again.

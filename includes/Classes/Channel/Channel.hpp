@@ -1,10 +1,10 @@
 /* ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
 ** │  Project : ft_irc – IRC Server                                                                │
 ** └───────────────────────────────────────────────────────────────────────────────────────────────┘
-** File       : includes/Classes/Channel.hpp
+** File       : includes/Classes/Channel/Channel.hpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-04-25
+** Edited     : 2025-04-28
 ** Description: Every channel deserves a structure to track their data
 */
 
@@ -32,16 +32,21 @@ class Channel {
         bool              isTopicRestricted(void) const;
         size_t            getUserLimit(void)      const;
         
-        void tryJoin(const int clientFd, const bool isInvited = false, const std::string &providedKey = "") const;
-        bool hasTopic(void)                                                                                 const;
-        
+        void tryJoin(Client *client, const std::string &providedKey = "");
+        bool hasTopic(void) const;
+
         void                         addClient(Client* client);
         void                         removeClient(const int clientFd);
-        bool                         isMember(const int clientFd)      const;
-        bool                         isOperator(const int clientFd)    const;
-        const std::map<int, Client*> &getMembers(void)                 const;
-        const std::map<int, Client*> &getOperators(void)               const;
-        Client                       *getClient(const int clientFd)    const;
+        bool                         isMember(const int clientFd)       const;
+        bool                         isOperator(const int clientFd)     const;
+        const std::map<int, Client*> &getMembers(void)                  const;
+        const std::map<int, Client*> &getOperators(void)                const;
+        Client                       *getClient(const int clientFd)     const;
+
+        void                inviteClient(const int clientFd);
+        void                removeInvitation(const int clientFd);
+        bool                isInvited(const int clientFd)         const;
+        const std::set<int> &getInvitedMembers(void)              const;
 
         void setMode(const char type, const bool set = true, const std::string &context = "");
     private:
@@ -50,6 +55,7 @@ class Channel {
         std::string            _key;
         std::map<int, Client*> _members;
         std::map<int, Client*> _operators;
+        std::set<int>          _invitedMembers;
         bool                   _inviteOnly;
         bool                   _topicRestricted;
         size_t                 _userLimit;

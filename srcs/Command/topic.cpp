@@ -48,7 +48,7 @@ void Handler::handleTopic(Client &client, const vector<string> &argv) {
         } else if (argv.size() eq 1) {
             channel->hasTopic() ? client.appendToOutputBuffer(formatReply(RPL_TOPIC,   clientNickname, channelName, channel->getTopic()))
                                 : client.appendToOutputBuffer(formatReply(RPL_NOTOPIC, clientNickname, channelName, "No topic is set"));
-        } else if (not channel->isOperator(clientFd)) {
+        } else if (channel->isTopicRestricted() and not channel->isOperator(clientFd)) {
             client.appendToOutputBuffer(formatReply(ERR_CHANOPRIVSNEEDED, clientNickname, channelName, "You're not channel operator"));
         } else {
             channel->setTopic(argv[1]);

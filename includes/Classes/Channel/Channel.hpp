@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Channel/Channel.hpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-04-28
+** Edited     : 2025-04-29
 ** Description: Every channel deserves a structure to track their data
 */
 
@@ -33,6 +33,8 @@ class Channel {
         size_t            getUserLimit(void)      const;
         
         void tryJoin(Client *client, const std::string &providedKey = "");
+
+        void setTopic(const std::string &name);
         bool hasTopic(void) const;
 
         void                         addClient(Client* client);

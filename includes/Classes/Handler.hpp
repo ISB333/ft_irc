@@ -35,8 +35,9 @@ class Handler {
 		void	handleJoin(Client* client, const std::vector<std::string>& args);
 		void	handlePrivmsg(Client* client, const std::vector<std::string>& args);
 
+		void	handleTopic(Client &client, const std::vector<std::string> &argv);
 	private:
-		Server&							server;
+		Server							&_server;
 		typedef void (Handler::*CommandFunction)(Client*, const std::vector<std::string>&);
 		map<string, CommandFunction>	commandMap;		
 };

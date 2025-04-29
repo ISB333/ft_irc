@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Client.hpp
 ** Author     : aheitz
 ** Created    : 2025-04-22
-** Edited     : 2025-04-22
+** Edited     : 2025-04-29
 ** Description: Every client deserves a structure to track their connection
 */
 
@@ -75,12 +75,13 @@ class Client {
 
         // │────────────────────────────────────────────────────────────────────────────────────│ //
 
-        int          getFileDescriptor(void) const { return _fileDescriptor; };
-        bool         getAuthentication(void) const { return _authenticated;  };
-        const string &getUsername(void)      const { return _username;       };
-        const string &getNickname(void)      const { return _nickname;       };
-        const string &getInputBuffer(void)   const { return _inputBuffer;    };
-        const string &getOutputBuffer(void)  const { return _outputBuffer;   };
+        int          getFileDescriptor(void) const { return _fileDescriptor;                            };
+        bool         getAuthentication(void) const { return _authenticated;                             };
+        const string &getUsername(void)      const { return _username;                                  };
+        const string &getNickname(void)      const { return _nickname;                                  };
+        const string getPrefix(void)         const { return _nickname + "!" + _username + "@localhost"; };
+        const string &getInputBuffer(void)   const { return _inputBuffer;                               };
+        const string &getOutputBuffer(void)  const { return _outputBuffer;                              };
 
         // │────────────────────────────────────────────────────────────────────────────────────│ //
 

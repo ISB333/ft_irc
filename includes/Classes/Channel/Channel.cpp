@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Channel/Channel.cpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-04-28
+** Edited     : 2025-04-29
 ** Description: Channel class member functions
 */
 
@@ -30,6 +30,13 @@ Channel::Channel(const string &name) : _name(name),
  * @return const string& Simply the channel name
  */
 const string &Channel::getName(void) const { return _name; };
+
+/**
+ * @brief Define a new channel topic
+ * 
+ * @param name Topic name
+ */
+void Channel::setTopic(const string &name) { _topic = name; };
 
 /**
  * @brief Confirms whether the channel already has a subject

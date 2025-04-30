@@ -46,4 +46,5 @@ class Server {
 
 		void						run();
 		Channel *getChannel(const std::string &channelName) const;
+		void						authentification(std::string passwd);
 };

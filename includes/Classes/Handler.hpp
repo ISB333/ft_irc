@@ -6,7 +6,7 @@
 /*   By: adesille <adesille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 10:00:45 by adesille          #+#    #+#             */
-/*   Updated: 2025/04/25 10:35:13 by adesille         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:17:14 by adesille         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -34,6 +34,7 @@ class Handler {
 		void	handleUser(Client* client, const std::vector<std::string>& args);
 		void	handleJoin(Client* client, const std::vector<std::string>& args);
 		void	handlePrivmsg(Client* client, const std::vector<std::string>& args);
+		void	handlePassword(Client* client, const std::vector<std::string>& args);
 
 		void	handleTopic(Client &client, const std::vector<std::string> &argv);
 	private:

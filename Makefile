@@ -6,7 +6,7 @@
 #    By: adesille <adesille@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/21 11:35:08 by adesille          #+#    #+#              #
-#    Updated: 2025/04/25 10:39:16 by adesille         ###   ########.fr        #
+#    Updated: 2025/04/30 12:07:11 by adesille         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -31,13 +31,17 @@ YELLOW = \033[0;33m
 SRC = ./srcs
 SERVER = ./srcs/Server
 COMMAND = ./srcs/Command
+CHANNEL = ./includes/Classes/Channel
 OBJ_DIR = .obj
 
 SRCS := $(SRC)/main.cpp \
 		$(SERVER)/Server.cpp \
 		$(SERVER)/setupSocket.cpp \
 		$(SRC)/Client.cpp \
-		$(SRC)/Channel.cpp \
+		$(CHANNEL)/Channel.cpp \
+		$(CHANNEL)/inviteMode.cpp \
+		$(CHANNEL)/manageMembers.cpp \
+		$(CHANNEL)/setMode.cpp \
 		$(COMMAND)/parseLine.cpp \
 		$(COMMAND)/Handler.cpp 
 

@@ -6,17 +6,18 @@
 /*   By: adesille <adesille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 10:06:41 by adesille          #+#    #+#             */
-/*   Updated: 2025/04/25 11:11:23 by adesille         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:17:29 by adesille         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
 #include "ircServ.hpp"
 
-Handler::Handler(Server& server) : server(server) {
+Handler::Handler(Server& server) : _server(server) {
 	commandMap["NICK"] = &Handler::handleNick;
     commandMap["USER"] = &Handler::handleUser;
     commandMap["JOIN"] = &Handler::handleJoin;
     commandMap["PRIVMSG"] = &Handler::handlePrivmsg;
+    commandMap["PASS"] = &Handler::handlePassword;
 }
 
 std::vector<std::string> splitMessage(const std::string &message) {
@@ -39,8 +40,17 @@ void Handler::dispatchCommand(Client* client, const std::string& message) {
     if (it != commandMap.end()) {
         (this->*(it->second))(client, cmd.argv);
     } else {
-        client->sendReply(Replies::ERR_UNKNOWNCOMMAND(client->nickname, cmd.name));
+        client->sendReply(Replies::ERR_UNKNOWNCOMMAND(client->getNickname(), cmd.name));
     }
+}
+
+void	Handler::handlePassword(Client* client, const std::vector<std::string>& args) {
+	// std::cout << "ME Handle NICK" << std::endl;
+	// if (args)
+	if (args.size() > 1)
+	    client->sendReply(Replies::ERR_UNKNOWNERROR("*", "PASS", "Too many arguments"));
+	else
+		_server.authentification(args[0]);
 }
 
 void	Handler::handleNick(Client* client, const std::vector<std::string>& args) {

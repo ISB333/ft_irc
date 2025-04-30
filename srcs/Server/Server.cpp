@@ -21,7 +21,7 @@ Server::~Server() {
     for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
         delete it->second;
     }
-    for (std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); ++it) {
+    for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); ++it) {
         delete it->second;
     }
 	delete handler;
@@ -119,16 +119,21 @@ void Server::handleClientData(int index) {
 	}
 
 	// Add received data to client's buffer
-	client->buffer.append(buffer, bytesRead);
+	client->appendToInputBuffer(buffer, bytesRead);
+	// client->_buffer.append(buffer, bytesRead);
 
 	// IRC messages are terminated by \r\n
 	// Process complete messages while leaving partial messages in buffer
-	size_t pos;
-	while ((pos = client->buffer.find("\r\n")) != std::string::npos) {
-		std::string message = client->buffer.substr(0, pos);
-		client->buffer.erase(0, pos + 2);  // Remove processed message including \r\n
-		processCommand(client, message);
-	}
+
+	std::string s = client->popInputBuffer();		
+	if (!s.empty())
+		processCommand(client, s);
+	// size_t pos;
+	// while ((pos = client->getInputBuffer().find("\r\n")) != std::string::npos) {
+	// 	std::string message = client->getInputBuffer().substr(0, pos);
+	// 	client->buffer.erase(0, pos + 2);  // Remove processed message including \r\n
+	// 	processCommand(client, message);
+	// }
 }
 
 void Server::processCommand(Client* client, const std::string& message) {
@@ -171,7 +176,8 @@ void Server::removeClient(int fd) {
 
 void Server::broadcastMessage(const std::string& message, Client* sender, Channel* channel) {
     if (channel) {
-        for (std::map<int, Client*>::iterator it = channel->members.begin(); it != channel->members.end(); ++it) {
+		std::map<int, Client*> members = channel->getMembers();
+        for (std::map<int, Client*>::iterator it = members.begin(); it != members.end(); ++it) {
             if (it->second != sender) {
                 it->second->sendReply(message);
             }
@@ -183,4 +189,10 @@ void Server::broadcastMessage(const std::string& message, Client* sender, Channe
             }
         }
     }
+}
+
+void	Server::authentification(std::string passwd) {
+	if (passwd == password)
+		// allow client
+		std::cout << "Allowing Client to Enter in Server" << std::endl;
 }

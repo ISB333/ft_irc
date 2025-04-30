@@ -34,6 +34,7 @@ class Client {
          * @param fd Client ID
          */
         explicit Client(const int fd) : _fileDescriptor(fd), _authenticated(false) {};
+        ~Client() { close(_fileDescriptor); }
 
         // │────────────────────────────────────────────────────────────────────────────────────│ //
 
@@ -91,6 +92,9 @@ class Client {
 
         void setUsername(const string username) { _username = username; };
         void setNickname(const string nickname) { _nickname = nickname; };
+        void sendReply(const std::string& message);
+        void handleCommand(const std::string& command, const std::vector<std::string>& args);
+
     private:
         const int _fileDescriptor;
         bool      _authenticated;

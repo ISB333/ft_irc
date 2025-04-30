@@ -20,3 +20,6 @@ std::string formatReply(const int         code,
                         const std::string &nickname,
                         const std::string &middle,
                         const std::string &text);
+
+std::string intToString(int n);
+std::string getClientIP(int fd);

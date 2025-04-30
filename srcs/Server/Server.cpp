@@ -12,20 +12,20 @@
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-Server::Server(int port, const std::string& password) : password(password), port(port) {
+Server::Server(int port, const std::string& password) : _password(password), _port(port) {
 	setupSocket();
-	handler = new Handler(*this);
+	_handler = new Handler(*this);
 }
 
 Server::~Server() {
-    for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
+    for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
         delete it->second;
     }
     for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); ++it) {
         delete it->second;
     }
-	delete handler;
-    close(serverSocket);
+	delete _handler;
+    close(_serverSocket);
 };
 
 /*
@@ -41,7 +41,7 @@ void Server::handleNewConnection() {
 	struct sockaddr_in clientAddr;
 	socklen_t clientLen = sizeof(clientAddr);
 	// Accept returns a new file descriptor for the client connection
-	int clientFd = accept(serverSocket, (struct sockaddr*)&clientAddr, &clientLen);
+	int clientFd = accept(_serverSocket, (struct sockaddr*)&clientAddr, &clientLen);
 
 	if (clientFd < 0) {
 		perror("accept");
@@ -53,13 +53,13 @@ void Server::handleNewConnection() {
 
 	// Create a new Client object and add it to the clients map using the fd as key
 	Client* newClient = new Client(clientFd);
-	clients[clientFd] = newClient;
+	_clients[clientFd] = newClient;
 
 	// Add the new client socket to the poll monitoring list
 	struct pollfd pfd;
 	pfd.fd = clientFd;
 	pfd.events = POLLIN;  // Monitor for incoming data from this client
-	pollfds.push_back(pfd);
+	_pollfds.push_back(pfd);
 
 	std::cout << "New client connected: " << clientFd << std::endl;
 }
@@ -75,21 +75,21 @@ void Server::run() {
 	while (true) {
 		// poll() monitors multiple file descriptors, waiting for one to become ready
 		// -1 timeout means wait indefinitely until an event occurs
-		int ret = poll(&pollfds[0], pollfds.size(), -1);
+		int ret = poll(&_pollfds[0], _pollfds.size(), -1);
 		if (ret < 0) {
 			perror("poll");
 			continue;
 		}
 
 		// Check if the server socket has activity (index 0 in pollfds) - this means a new connection
-		if (pollfds[0].revents & POLLIN) {
+		if (_pollfds[0].revents & POLLIN) {
 			handleNewConnection();
 		}
 
 		// Check all client sockets for activity
 		// Starting from index 1 because index 0 is the server socket
-		for (size_t i = 1; i < pollfds.size(); ++i) {
-			if (pollfds[i].revents & POLLIN) {
+		for (size_t i = 1; i < _pollfds.size(); ++i) {
+			if (_pollfds[i].revents & POLLIN) {
 				// POLLIN indicates there's data to read from this client
 				handleClientData(i);
 			}
@@ -105,8 +105,8 @@ void Server::run() {
 */
 void Server::handleClientData(int index) {
 	
-	int fd = pollfds[index].fd;
-	Client* client = clients[fd];
+	int fd = _pollfds[index].fd;
+	Client* client = _clients[fd];
 	// IRC protocol limits messages to 512 bytes including CRLF
 	char buffer[512];
 	// recv() reads data from socket into buffer
@@ -120,20 +120,12 @@ void Server::handleClientData(int index) {
 
 	// Add received data to client's buffer
 	client->appendToInputBuffer(buffer, bytesRead);
-	// client->_buffer.append(buffer, bytesRead);
 
 	// IRC messages are terminated by \r\n
 	// Process complete messages while leaving partial messages in buffer
-
 	std::string s = client->popInputBuffer();		
 	if (!s.empty())
 		processCommand(client, s);
-	// size_t pos;
-	// while ((pos = client->getInputBuffer().find("\r\n")) != std::string::npos) {
-	// 	std::string message = client->getInputBuffer().substr(0, pos);
-	// 	client->buffer.erase(0, pos + 2);  // Remove processed message including \r\n
-	// 	processCommand(client, message);
-	// }
 }
 
 void Server::processCommand(Client* client, const std::string& message) {
@@ -142,8 +134,8 @@ void Server::processCommand(Client* client, const std::string& message) {
     	// Command parsing and processing logic here
 	}
 	*/
-    // std::cout << "Received: " << message << std::endl;
-	// std::cout << "Received: ";
+    std::cout << "Received: " << message << std::endl;
+	std::cout << "Received: ";
 	// Command cmd = parseLine(message);
 	// if (!cmd.name.empty())
 	// 	std::cout << "name: " << cmd.name << std::endl;
@@ -154,19 +146,19 @@ void Server::processCommand(Client* client, const std::string& message) {
 	// else
 	// 	std::cout << "cmd empty" << std::endl;
     // client->sendReply(":" + client->nickname + "!" + client->username + "@localhost " + message + "\r\n");
-	handler->dispatchCommand(client, message);
+	_handler->dispatchCommand(client, message);
 }
 
 void Server::removeClient(int fd) {
-    std::map<int, Client*>::iterator it = clients.find(fd);
-    if (it != clients.end()) {
+    std::map<int, Client*>::iterator it = _clients.find(fd);
+    if (it != _clients.end()) {
         delete it->second;
-        clients.erase(it);
+        _clients.erase(it);
     }
 
-    for (size_t i = 0; i < pollfds.size(); ++i) {
-        if (pollfds[i].fd == fd) {
-            pollfds.erase(pollfds.begin() + i);
+    for (size_t i = 0; i < _pollfds.size(); ++i) {
+        if (_pollfds[i].fd == fd) {
+            _pollfds.erase(_pollfds.begin() + i);
             break;
         }
     }
@@ -183,7 +175,7 @@ void Server::broadcastMessage(const std::string& message, Client* sender, Channe
             }
         }
     } else {
-        for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it) {
+        for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
             if (it->second != sender) {
                 it->second->sendReply(message);
             }
@@ -191,8 +183,51 @@ void Server::broadcastMessage(const std::string& message, Client* sender, Channe
     }
 }
 
-void	Server::authentification(std::string passwd) {
-	if (passwd == password)
-		// allow client
-		std::cout << "Allowing Client to Enter in Server" << std::endl;
+#include <sys/socket.h>
+#include <unistd.h>
+
+// ...
+
+void    force_disconnect(int fd)
+{
+	shutdown(fd, SHUT_WR);
+    struct linger  so_linger;
+
+    so_linger.l_onoff  = 1;
+    so_linger.l_linger = 0;
+
+    setsockopt(fd, SOL_SOCKET, SO_LINGER,
+               &so_linger, sizeof(so_linger));
+
+    close(fd);
+}
+
+
+void	Server::authentification(Client* client, std::string passwd) {
+	if (passwd == _password) {
+		std::cout << "Password Correct, you are allowed to enter in the Server" << std::endl;
+		client->toggleAuthentication(true);
+	}
+	else if (isIPBanned(client->getIP())) {
+		client->sendReply(Replies::ERR_ALREADYBANNED());
+		force_disconnect(client->getFileDescriptor());
+		removeClient(client->getFileDescriptor());
+	}
+	else {
+		client->incrementPasswdAttempt();
+		int passwdAttempt = client->getPasswdAttempt();
+		if (passwdAttempt == 3) {
+		 	client->sendReply(Replies::ERR_PASSWDMISMATCH(passwd, passwdAttempt));
+			client->sendReply(Replies::ERR_YOUREBANNEDCREEP());
+			addIPToBanList(client->getIP());
+			force_disconnect(client->getFileDescriptor());
+			removeClient(client->getFileDescriptor());
+		}
+		else if (passwdAttempt == 2) {
+		 	client->sendReply(Replies::ERR_PASSWDMISMATCH(passwd, passwdAttempt));
+		 	client->sendReply(Replies::ERR_YOUWILLBEBANNED());
+		}
+		else
+		 	client->sendReply(Replies::ERR_PASSWDMISMATCH(passwd, passwdAttempt));
+	}
 }

@@ -6,7 +6,7 @@
 #    By: adesille <adesille@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/21 11:35:08 by adesille          #+#    #+#              #
-#    Updated: 2025/04/30 12:07:11 by adesille         ###   ########.fr        #
+#    Updated: 2025/04/30 14:24:20 by adesille         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -43,7 +43,9 @@ SRCS := $(SRC)/main.cpp \
 		$(CHANNEL)/manageMembers.cpp \
 		$(CHANNEL)/setMode.cpp \
 		$(COMMAND)/parseLine.cpp \
-		$(COMMAND)/Handler.cpp 
+		$(COMMAND)/Handler.cpp \
+		$(COMMAND)/getClientIP.cpp \
+		$(COMMAND)/utils.cpp 
 
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
 

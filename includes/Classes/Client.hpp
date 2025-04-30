@@ -33,7 +33,7 @@ class Client {
          * 
          * @param fd Client ID
          */
-        explicit Client(const int fd) : _fileDescriptor(fd), _authenticated(false) {};
+        explicit Client(const int fd) : _fileDescriptor(fd), _authenticated(false), _password_attempt(0), _clientIP(getClientIP(fd)) {};
         ~Client() { close(_fileDescriptor); }
 
         // │────────────────────────────────────────────────────────────────────────────────────│ //
@@ -78,8 +78,10 @@ class Client {
 
         int          getFileDescriptor(void) const { return _fileDescriptor;                            };
         bool         getAuthentication(void) const { return _authenticated;                             };
+        int          getPasswdAttempt(void)  const { return _password_attempt;                          };
         const string &getUsername(void)      const { return _username;                                  };
         const string &getNickname(void)      const { return _nickname;                                  };
+        const string &getIP(void)            const { return _clientIP;                                  };
         const string getPrefix(void)         const { return _nickname + "!" + _username + "@localhost"; };
         const string &getInputBuffer(void)   const { return _inputBuffer;                               };
         const string &getOutputBuffer(void)  const { return _outputBuffer;                              };
@@ -92,12 +94,15 @@ class Client {
 
         void setUsername(const string username) { _username = username; };
         void setNickname(const string nickname) { _nickname = nickname; };
+        void incrementPasswdAttempt()           {  _password_attempt++; };
         void sendReply(const std::string& message);
         void handleCommand(const std::string& command, const std::vector<std::string>& args);
 
     private:
         const int _fileDescriptor;
         bool      _authenticated;
+		int	      _password_attempt;
+        string    _clientIP;
         string    _username;
         string    _nickname;
         string    _inputBuffer;

@@ -24,14 +24,15 @@ class Handler;
 
 class Server {
 	private:
-		vector<struct pollfd>		pollfds;
-		map<int, Client*>			clients;
+		vector<struct pollfd>		_pollfds;
+		map<int, Client*>			_clients;
 		map<std::string, Channel*>	_channels;
-		struct sockaddr_in 			serverAddr;
-		std::string 				password;
-		int							port;
-		int							serverSocket;
-		Handler*					handler;
+		struct sockaddr_in 			_serverAddr;
+		std::string 				_password;
+		int							_port;
+		int							_serverSocket;
+		Handler*					_handler;
+		set<string>					_bannedIPs;
 
 		void						setupSocket();
 		void						handleNewConnection();
@@ -45,6 +46,8 @@ class Server {
 		~Server();
 
 		void						run();
-		Channel *getChannel(const std::string &channelName) const;
-		void						authentification(std::string passwd);
+		Channel 					*getChannel(const std::string &channelName) const;
+		bool						isIPBanned(const std::string &IP)   { return (_bannedIPs.find(IP) != _bannedIPs.end()); };
+		void						addIPToBanList(const string IP) 	{ _bannedIPs.insert(IP); }
+		void						authentification(Client* client, std::string passwd);
 };

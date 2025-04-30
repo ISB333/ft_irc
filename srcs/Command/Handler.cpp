@@ -6,7 +6,7 @@
 /*   By: adesille <adesille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 10:06:41 by adesille          #+#    #+#             */
-/*   Updated: 2025/04/30 12:17:29 by adesille         ###   ########.fr       */
+/*   Updated: 2025/04/30 14:50:53 by adesille         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -44,13 +44,13 @@ void Handler::dispatchCommand(Client* client, const std::string& message) {
     }
 }
 
+
 void	Handler::handlePassword(Client* client, const std::vector<std::string>& args) {
-	// std::cout << "ME Handle NICK" << std::endl;
-	// if (args)
+	std::cout << "ME Handle PASS" << std::endl;
 	if (args.size() > 1)
 	    client->sendReply(Replies::ERR_UNKNOWNERROR("*", "PASS", "Too many arguments"));
-	else
-		_server.authentification(args[0]);
+	else if (!args.empty() && !args[0].empty())
+		_server.authentification(client, args[0]);
 }
 
 void	Handler::handleNick(Client* client, const std::vector<std::string>& args) {

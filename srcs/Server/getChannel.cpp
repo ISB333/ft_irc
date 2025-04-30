@@ -21,8 +21,8 @@ using namespace std;
  * @return Channel* The pointer to this channel
  */
 Channel *Server::getChannel(const string &name) const {
-    const map<string, Channel*>::const_iterator occurrence = _channels.find(name);
+    const map<string, Channel*>::const_iterator occurrence = channels.find(name);
 
-    if (occurrence eq _channels.end())  throw out_of_range("Channel not found: " + name);
+    if (occurrence eq channels.end())  throw out_of_range("Channel not found: " + name);
     return occurrence->second;
 };

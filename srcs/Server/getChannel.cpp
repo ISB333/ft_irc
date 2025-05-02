@@ -4,7 +4,7 @@
 ** File       : srcs/Server/getChannel.cpp
 ** Author     : aheitz
 ** Created    : 2025-04-24
-** Edited     : 2025-04-24
+** Edited     : 2025-05-02
 ** Description: Definition of getChannel's server function
 */
 
@@ -14,6 +14,8 @@
 
 using namespace std;
 
+// │────────────────────────────────────────────────────────────────────────────────────────────│ //
+
 /**
  * @brief Searches the pointer to a channel in the server
  * 
@@ -21,8 +23,8 @@ using namespace std;
  * @return Channel* The pointer to this channel
  */
 Channel *Server::getChannel(const string &name) const {
-    const map<string, Channel*>::const_iterator occurrence = channels.find(name);
+    const map<string, Channel*>::const_iterator occurrence = _channels.find(name);
 
-    if (occurrence eq channels.end())  throw out_of_range("Channel not found: " + name);
+    if (occurrence eq _channels.end())  throw out_of_range("Channel not found: " + name);
     return occurrence->second;
 };

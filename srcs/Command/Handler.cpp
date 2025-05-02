@@ -1,23 +1,29 @@
-/******************************************************************************/
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Handler.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: adesille <adesille@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/25 10:06:41 by adesille          #+#    #+#             */
-/*   Updated: 2025/04/30 14:50:53 by adesille         ###   ########.fr       */
-/*                                                                            */
-/******************************************************************************/
+/* ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
+** │  Project : ft_irc – IRC Server                                                                │
+** └───────────────────────────────────────────────────────────────────────────────────────────────┘
+** File       : srcs/Command/Handler.cpp
+** Author     : adesille, aheitz
+** Created    : 2025-04-25
+** Edited     : 2025-05-02
+** Description: Handler class member functions
+*/
 
 #include "ircServ.hpp"
 
+// │────────────────────────────────────────────────────────────────────────────────────────────│ //
+
+using namespace std;
+
+// │────────────────────────────────────────────────────────────────────────────────────────────│ //
+
 Handler::Handler(Server& server) : _server(server) {
-	commandMap["NICK"] = &Handler::handleNick;
-    commandMap["USER"] = &Handler::handleUser;
-    commandMap["JOIN"] = &Handler::handleJoin;
+	commandMap["NICK"]    = &Handler::handleNick;
+    commandMap["USER"]    = &Handler::handleUser;
+    commandMap["JOIN"]    = &Handler::handleJoin;
     commandMap["PRIVMSG"] = &Handler::handlePrivmsg;
-    commandMap["PASS"] = &Handler::handlePassword;
+    commandMap["PASS"]    = &Handler::handlePassword;
+    commandMap["TOPIC"]   = &Handler::handleTopic;
+    commandMap["MODE"]    = &Handler::handleMode;
 }
 
 std::vector<std::string> splitMessage(const std::string &message) {

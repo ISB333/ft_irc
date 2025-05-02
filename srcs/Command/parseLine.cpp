@@ -4,7 +4,7 @@
 ** File       : srcs/Command/parseLine.cpp
 ** Author     : aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-04-22
+** Edited     : 2025-05-02
 ** Description: Functionality for parsing and returning a command
 */
 
@@ -24,7 +24,7 @@ using namespace std;
  * @param line The line to be processed
  * @return Command The command containing the name and arguments
 */
-Command parseLine(std::string line) {
+Command parseLine(string line) {
     Command result;
     size_t  nextSpace;
 

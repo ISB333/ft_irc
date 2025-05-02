@@ -2,13 +2,14 @@
 ** │  Project : ft_irc – IRC Server                                                                │
 ** └───────────────────────────────────────────────────────────────────────────────────────────────┘
 ** File       : includes/Classes/Client.hpp
-** Author     : aheitz
+** Author     : adesille, aheitz
 ** Created    : 2025-04-22
-** Edited     : 2025-04-29
+** Edited     : 2025-05-02
 ** Description: Every client deserves a structure to track their connection
 */
 
 //TODO: Check the relevance of each member function.
+//TODO: The constructor should initiate each field?
 
 #pragma  once
 
@@ -33,8 +34,8 @@ class Client {
          * 
          * @param fd Client ID
          */
-        explicit Client(const int fd) : _fileDescriptor(fd), _authenticated(false), _password_attempt(0), _clientIP(getClientIP(fd)) {};
-        ~Client() { close(_fileDescriptor); }
+        explicit Client(const int fd) : fileDescriptor_(fd), authenticated_(false), password_attempt_(0), clientIP_(getClientIP(fd)) {};
+        ~Client() { close(fileDescriptor_); }
 
         // │────────────────────────────────────────────────────────────────────────────────────│ //
 
@@ -44,7 +45,7 @@ class Client {
          * @param input Data to be processed 
          * @param size The size of data
          */
-        void   appendToInputBuffer(const char input[], const size_t size) { _inputBuffer.append(input, size); };
+        void   appendToInputBuffer(const char input[], const size_t size) { inputBuffer_.append(input, size); };
 
         /**
          * @brief Retrieves the next line from the buffer
@@ -52,12 +53,12 @@ class Client {
          * @return string The full line
          */
         string popInputBuffer(void) {
-            size_t position = _inputBuffer.find(CRLF);
+            size_t position = inputBuffer_.find(CRLF);
 
             if (position eq string::npos)   return "";
 
-            string line = _inputBuffer.substr(0, position);
-                          _inputBuffer.erase(0,  position + 2);
+            string line = inputBuffer_.substr(0, position);
+                          inputBuffer_.erase(0,  position + 2);
             return line;
         };
 
@@ -66,47 +67,47 @@ class Client {
          * 
          * @param message The message to append to the output
          */
-        void appendToOutputBuffer(const string &message) { _outputBuffer += message + CRLF; };
+        void appendToOutputBuffer(const string &message) { outputBuffer_ += message + CRLF; };
 
         /**
          * @brief Clears output buffer
          * 
          */
-        void clearOutputBuffer(void) { _outputBuffer.clear(); };
+        void clearOutputBuffer(void) { outputBuffer_.clear(); };
 
         // │────────────────────────────────────────────────────────────────────────────────────│ //
 
-        int          getFileDescriptor(void) const { return _fileDescriptor;                            };
-        bool         getAuthentication(void) const { return _authenticated;                             };
-        int          getPasswdAttempt(void)  const { return _password_attempt;                          };
-        const string &getUsername(void)      const { return _username;                                  };
-        const string &getNickname(void)      const { return _nickname;                                  };
-        const string &getIP(void)            const { return _clientIP;                                  };
-        const string getPrefix(void)         const { return _nickname + "!" + _username + "@localhost"; };
-        const string &getInputBuffer(void)   const { return _inputBuffer;                               };
-        const string &getOutputBuffer(void)  const { return _outputBuffer;                              };
+        int          getFileDescriptor(void) const { return                            fileDescriptor_; };
+        bool         getAuthentication(void) const { return                             authenticated_; };
+        int          getPasswdAttempt(void)  const { return                          password_attempt_; };
+        const string &getUsername(void)      const { return                                  username_; };
+        const string &getNickname(void)      const { return                                  nickname_; };
+        const string &getIP(void)            const { return                                  clientIP_; };
+        const string getPrefix(void)         const { return nickname_ + "!" + username_ + "@localhost"; };
+        const string &getInputBuffer(void)   const { return                               inputBuffer_; };
+        const string &getOutputBuffer(void)  const { return                              outputBuffer_; };
 
         // │────────────────────────────────────────────────────────────────────────────────────│ //
 
         void toggleAuthentication(const bool change) {
-            if (change not_eq _authenticated)   _authenticated = not _authenticated;
+            if (change not_eq authenticated_)   authenticated_ = not authenticated_;
         };
 
-        void setUsername(const string username) { _username = username; };
-        void setNickname(const string nickname) { _nickname = nickname; };
-        void incrementPasswdAttempt()           {  _password_attempt++; };
+        void setUsername(const string username) {         username_ = username; };
+        void setNickname(const string nickname) {      inputBuffer_ = nickname; };
+        void incrementPasswdAttempt()           { password_attempt_++;          };
         void sendReply(const std::string& message);
         void handleCommand(const std::string& command, const std::vector<std::string>& args);
 
     private:
-        const int _fileDescriptor;
-        bool      _authenticated;
-		int	      _password_attempt;
-        string    _clientIP;
-        string    _username;
-        string    _nickname;
-        string    _inputBuffer;
-        string    _outputBuffer;
+        const int   fileDescriptor_;
+        bool         authenticated_;
+		int	      password_attempt_;
+        string            clientIP_;
+        string            username_;
+        string            nickname_;
+        string         inputBuffer_;
+        string        outputBuffer_;
 
         Client(const Client &source);            // Non-instantiable
         Client &operator=(const Client &source); // Non-instantiable

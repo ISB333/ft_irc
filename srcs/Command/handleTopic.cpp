@@ -34,7 +34,7 @@ void Handler::handleTopic(Client *client, const vector<string> &argv) {
         const int clientFd        = client->getFileDescriptor();
         const string &channelName = argv[0];
         Channel *channel          = NULL;
-        try                         { channel = _server.getChannel(channelName); }
+        try                         { channel = server_.getChannel(channelName); }
         catch (const out_of_range&) { client->appendToOutputBuffer(formatReply(ERR_NOSUCHCHANNEL, clientNickname, channelName, "No such channel")); return; };
 
         if (not channel->isMember(clientFd)) {

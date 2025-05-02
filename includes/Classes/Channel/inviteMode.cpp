@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Channel/inviteMode.cpp
 ** Author     : aheitz
 ** Created    : 2025-04-28
-** Edited     : 2025-04-28
+** Edited     : 2025-05-02
 ** Description: Functions used in invite mode
 */
 
@@ -18,7 +18,7 @@
  * @param clientFd The client to invite
  */
  void Channel::inviteClient(const int clientFd) {
-    if (not isMember(clientFd)) _invitedMembers.insert(clientFd);
+    if (not isMember(clientFd)) invitedMembers_.insert(clientFd);
 };
 
 /**
@@ -26,7 +26,7 @@
  * 
  * @param clientFd The client to be removed
  */
-void Channel::removeInvitation(const int clientFd) { _invitedMembers.erase(clientFd); };
+void Channel::removeInvitation(const int clientFd) { invitedMembers_.erase(clientFd); };
 
 /**
  * @brief Getter to find out if a client is invited
@@ -35,11 +35,11 @@ void Channel::removeInvitation(const int clientFd) { _invitedMembers.erase(clien
  * @return true If invited
  * @return false Otherwise
  */
-bool Channel::isInvited(const int clientFd) const { return _invitedMembers.count(clientFd); };
+bool Channel::isInvited(const int clientFd) const { return invitedMembers_.count(clientFd); };
 
 /**
  * @brief Getter to obtain the invitation list
  * 
  * @return set<int> The complete invitation list
  */
-const set<int> &Channel::getInvitedMembers(void) const { return _invitedMembers; };
+const set<int> &Channel::getInvitedMembers(void) const { return invitedMembers_; };

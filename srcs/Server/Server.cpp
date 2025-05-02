@@ -4,28 +4,29 @@
 ** File       : srcs/Server/Server.cpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-04-24
+** Edited     : 2025-05-02
 ** Description: Definitions of server functions
 */
 
 #include "ircServ.hpp"
+#include <sys/poll.h>
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-Server::Server(int port, const std::string& password) : _password(password), _port(port) {
+Server::Server(int port, const std::string& password) : password_(password), port_(port) {
 	setupSocket();
-	_handler = new Handler(*this);
+	handler_ = new Handler(*this);
 }
 
 Server::~Server() {
-    for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+    for (std::map<int, Client*>::iterator it = clients_.begin(); it != clients_.end(); ++it) {
         delete it->second;
     }
-    for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); ++it) {
+    for (std::map<std::string, Channel*>::iterator it = channels_.begin(); it != channels_.end(); ++it) {
         delete it->second;
     }
-	delete _handler;
-    close(_serverSocket);
+	delete handler_;
+    close(serverSocket_);
 };
 
 /*
@@ -41,7 +42,7 @@ void Server::handleNewConnection() {
 	struct sockaddr_in clientAddr;
 	socklen_t clientLen = sizeof(clientAddr);
 	// Accept returns a new file descriptor for the client connection
-	int clientFd = accept(_serverSocket, (struct sockaddr*)&clientAddr, &clientLen);
+	int clientFd = accept(serverSocket_, (struct sockaddr*)&clientAddr, &clientLen);
 
 	if (clientFd < 0) {
 		perror("accept");
@@ -53,13 +54,13 @@ void Server::handleNewConnection() {
 
 	// Create a new Client object and add it to the clients map using the fd as key
 	Client* newClient = new Client(clientFd);
-	_clients[clientFd] = newClient;
+	clients_[clientFd] = newClient;
 
 	// Add the new client socket to the poll monitoring list
 	struct pollfd pfd;
 	pfd.fd = clientFd;
 	pfd.events = POLLIN;  // Monitor for incoming data from this client
-	_pollfds.push_back(pfd);
+	pollfds_.push_back(pfd);
 
 	std::cout << "New client connected: " << clientFd << std::endl;
 }
@@ -75,21 +76,21 @@ void Server::run() {
 	while (true) {
 		// poll() monitors multiple file descriptors, waiting for one to become ready
 		// -1 timeout means wait indefinitely until an event occurs
-		int ret = poll(&_pollfds[0], _pollfds.size(), -1);
+		int ret = poll(&pollfds_[0], pollfds_.size(), -1);
 		if (ret < 0) {
 			perror("poll");
 			continue;
 		}
 
 		// Check if the server socket has activity (index 0 in pollfds) - this means a new connection
-		if (_pollfds[0].revents & POLLIN) {
+		if (pollfds_[0].revents & POLLIN) {
 			handleNewConnection();
 		}
 
 		// Check all client sockets for activity
 		// Starting from index 1 because index 0 is the server socket
-		for (size_t i = 1; i < _pollfds.size(); ++i) {
-			if (_pollfds[i].revents & POLLIN) {
+		for (size_t i = 1; i < pollfds_.size(); ++i) {
+			if (pollfds_[i].revents & POLLIN) {
 				// POLLIN indicates there's data to read from this client
 				handleClientData(i);
 			}
@@ -105,8 +106,8 @@ void Server::run() {
 */
 void Server::handleClientData(int index) {
 	
-	int fd = _pollfds[index].fd;
-	Client* client = _clients[fd];
+	int fd = pollfds_[index].fd;
+	Client* client = clients_[fd];
 	// IRC protocol limits messages to 512 bytes including CRLF
 	char buffer[512];
 	// recv() reads data from socket into buffer
@@ -146,19 +147,19 @@ void Server::processCommand(Client* client, const std::string& message) {
 	// else
 	// 	std::cout << "cmd empty" << std::endl;
     // client->sendReply(":" + client->nickname + "!" + client->username + "@localhost " + message + "\r\n");
-	_handler->dispatchCommand(client, message);
+	handler_->dispatchCommand(client, message);
 }
 
 void Server::removeClient(int fd) {
-    std::map<int, Client*>::iterator it = _clients.find(fd);
-    if (it != _clients.end()) {
+    std::map<int, Client*>::iterator it = clients_.find(fd);
+    if (it != clients_.end()) {
         delete it->second;
-        _clients.erase(it);
+        clients_.erase(it);
     }
 
-    for (size_t i = 0; i < _pollfds.size(); ++i) {
-        if (_pollfds[i].fd == fd) {
-            _pollfds.erase(_pollfds.begin() + i);
+    for (size_t i = 0; i < pollfds_.size(); ++i) {
+        if (pollfds_[i].fd == fd) {
+            pollfds_.erase(pollfds_.begin() + i);
             break;
         }
     }
@@ -175,7 +176,7 @@ void Server::broadcastMessage(const std::string& message, Client* sender, Channe
             }
         }
     } else {
-        for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+        for (std::map<int, Client*>::iterator it = clients_.begin(); it != clients_.end(); ++it) {
             if (it->second != sender) {
                 it->second->sendReply(message);
             }
@@ -204,7 +205,7 @@ void    force_disconnect(int fd)
 
 
 void	Server::authentification(Client* client, std::string passwd) {
-	if (passwd == _password) {
+	if (passwd == password_) {
 		std::cout << "Password Correct, you are allowed to enter in the Server" << std::endl;
 		client->toggleAuthentication(true);
 	}

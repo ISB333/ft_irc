@@ -16,14 +16,14 @@ using namespace std;
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-Handler::Handler(Server& server) : _server(server) {
-	commandMap["NICK"]    = &Handler::handleNick;
-    commandMap["USER"]    = &Handler::handleUser;
-    commandMap["JOIN"]    = &Handler::handleJoin;
-    commandMap["PRIVMSG"] = &Handler::handlePrivmsg;
-    commandMap["PASS"]    = &Handler::handlePassword;
-    commandMap["TOPIC"]   = &Handler::handleTopic;
-    commandMap["MODE"]    = &Handler::handleMode;
+Handler::Handler(Server& server) : server_(server) {
+	commandMap_["NICK"]    = &Handler::handleNick;
+    commandMap_["USER"]    = &Handler::handleUser;
+    commandMap_["JOIN"]    = &Handler::handleJoin;
+    commandMap_["PRIVMSG"] = &Handler::handlePrivmsg;
+    commandMap_["PASS"]    = &Handler::handlePassword;
+    commandMap_["TOPIC"]   = &Handler::handleTopic;
+    commandMap_["MODE"]    = &Handler::handleMode;
 }
 
 std::vector<std::string> splitMessage(const std::string &message) {
@@ -42,8 +42,8 @@ std::vector<std::string> splitMessage(const std::string &message) {
 void Handler::dispatchCommand(Client* client, const std::string& message) {
     Command cmd = parseLine(message); 
 
-    std::map<std::string, CommandFunction>::iterator it = commandMap.find(cmd.name);
-    if (it != commandMap.end()) {
+    std::map<std::string, CommandFunction>::iterator it = commandMap_.find(cmd.name);
+    if (it != commandMap_.end()) {
         (this->*(it->second))(client, cmd.argv);
     } else {
         client->sendReply(Replies::ERR_UNKNOWNCOMMAND(client->getNickname(), cmd.name));
@@ -56,7 +56,7 @@ void	Handler::handlePassword(Client* client, const std::vector<std::string>& arg
 	if (args.size() > 1)
 	    client->sendReply(Replies::ERR_UNKNOWNERROR("*", "PASS", "Too many arguments"));
 	else if (!args.empty() && !args[0].empty())
-		_server.authentification(client, args[0]);
+    server_.authentification(client, args[0]);
 }
 
 void	Handler::handleNick(Client* client, const std::vector<std::string>& args) {

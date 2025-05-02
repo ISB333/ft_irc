@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Channel/setMode.cpp
 ** Author     : aheitz
 ** Created    : 2025-04-28
-** Edited     : 2025-04-28
+** Edited     : 2025-05-02
 ** Description: Declaration of function to safely change channel configurations
 */
 
@@ -46,9 +46,9 @@
  */
  void Channel::setMode(const char type, const bool set, const string &context) {
     switch (type) {
-        case 'k': _key = set ? context : ""; break;
-        case 'i': _inviteOnly      = set;    break;
-        case 't': _topicRestricted = set;    break;
+        case 'k': _key             = context;   break;
+        case 'i': _inviteOnly      = set;       break;
+        case 't': _topicRestricted = set;       break;
         case 'o': {
             catchInvalidValue('o', context.c_str());
             int clientFd = atoi(context.c_str());
@@ -59,9 +59,9 @@
             break;
         };
         case 'l': {
-            catchInvalidValue('l', context.c_str());
-            _userLimit = set ? atoi(context.c_str()) : 0;
+            _userLimit = set ? catchInvalidValue('l', context.c_str()), atoi(context.c_str()) : 0;
             break;
         };
+        default: throw invalid_argument("MODE " + string(1, type) + ": unknown mode");
     };
 };

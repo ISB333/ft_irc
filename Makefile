@@ -1,15 +1,12 @@
-#******************************************************************************#
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: adesille <adesille@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/04/21 11:35:08 by adesille          #+#    #+#              #
-#    Updated: 2025/04/30 14:24:20 by adesille         ###   ########.fr        #
-#                                                                              #
-#******************************************************************************#
-
+## ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
+## │  Project : ft_irc – IRC Server                                                                │
+## └───────────────────────────────────────────────────────────────────────────────────────────────┘
+## File       : Makefile
+## Author     : adesille, aheitz
+## Created    : 2025-04-21
+## Edited     : 2025-05-02
+## Description: Recipe for protocol soup
+##
 
 NAME		= ircserv
 CXXFLAGS		+= -Wall -Wextra -I./includes -I./includes/Classes -I./includes/Structs --std=c++98
@@ -34,41 +31,45 @@ COMMAND = ./srcs/Command
 CHANNEL = ./includes/Classes/Channel
 OBJ_DIR = .obj
 
-SRCS := $(SRC)/main.cpp \
-		$(SERVER)/Server.cpp \
-		$(SERVER)/setupSocket.cpp \
-		$(SRC)/Client.cpp \
-		$(CHANNEL)/Channel.cpp \
-		$(CHANNEL)/inviteMode.cpp \
-		$(CHANNEL)/manageMembers.cpp \
-		$(CHANNEL)/setMode.cpp \
-		$(COMMAND)/parseLine.cpp \
-		$(COMMAND)/Handler.cpp \
-		$(COMMAND)/getClientIP.cpp \
-		$(COMMAND)/utils.cpp 
+SRCS := $(SRC)/main.cpp              \
+        $(SERVER)/Server.cpp         \
+        $(SERVER)/getChannel.cpp     \
+        $(SERVER)/setupSocket.cpp    \
+        $(SRC)/Client.cpp            \
+        $(CHANNEL)/Channel.cpp       \
+        $(CHANNEL)/inviteMode.cpp    \
+        $(CHANNEL)/manageMembers.cpp \
+        $(CHANNEL)/setMode.cpp       \
+        $(COMMAND)/parseLine.cpp     \
+        $(COMMAND)/Handler.cpp       \
+        $(COMMAND)/handleMode.cpp    \
+        $(COMMAND)/handleTopic.cpp   \
+        $(COMMAND)/getClientIP.cpp   \
+        $(COMMAND)/formatReply.cpp   \
+        $(COMMAND)/utils.cpp 
 
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
 
 all : $(NAME)
 
 $(NAME) : $(OBJS)
-	@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
+    @$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 
 $(OBJ_DIR)/%.o : %.cpp
-	@mkdir -p $(@D)
-	@if [ ! -z "$(wildcard .obj/*.o)" ]; then \
-		echo "$(YELLOW)\nCompiling ircserv files...$(DEFAULT)"; \
-	fi
-	@$(CXX) $(CXXFLAGS) -c $< -o $@
+    @mkdir -p $(@D)
+    @if [ ! -z "$(wildcard .obj/*.o)" ]; then \
+        echo "$(YELLOW)\nCompiling ircserv files...$(DEFAULT)"; \
+    fi
+    @$(CXX) $(CXXFLAGS) -c $< -o $@
 
 
 clean :
 # @rm -rf $(OBJ_DIR) $(DEPFILES)
-	rm -rf $(OBJS)
-	@echo "$(DARK_GREEN)\nEvery files are cleaned$(DEFAULT)"
+    rm -rf $(OBJS)
+    @echo "$(DARK_GREEN)\nEvery files are cleaned$(DEFAULT)"
 
 fclean : clean
-	@rm -f $(NAME)
+    @rm -f $(NAME)
 
 re : fclean all
 
@@ -76,15 +77,15 @@ re : fclean all
 -include $(DEPFILES)
 
 disco:
-	@bash ./.scripts/.disco.sh
+    @bash ./.scripts/.disco.sh
 
 git:
-	@git add .
-	@git commit -m "$(shell date +"%Y-%m-%d %H:%M:%S")'s commit"
-	@git push
+    @git add .
+    @git commit -m "$(shell date +"%Y-%m-%d %H:%M:%S")'s commit"
+    @git push
 
 x:	
-	@make
-	./ircserv
+    @make
+    ./ircserv
 
 .PHONY: all bonus clean disco git x fclean re

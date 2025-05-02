@@ -37,7 +37,7 @@ class Handler {
 		void	handleTopic(Client *client, const std::vector<std::string> &argv);
 		void	handleMode(Client *client,  const std::vector<std::string> &argv);
 	private:
-		Server							&_server;
+		Server							&server_;
 		typedef void (Handler::*CommandFunction)(Client*, const std::vector<std::string>&);
-		map<string, CommandFunction>	commandMap;		
+		map<string, CommandFunction>	commandMap_;		
 };

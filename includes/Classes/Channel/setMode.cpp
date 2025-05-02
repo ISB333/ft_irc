@@ -46,20 +46,20 @@
  */
  void Channel::setMode(const char type, const bool set, const string &context) {
     switch (type) {
-        case 'k': _key             = context;   break;
-        case 'i': _inviteOnly      = set;       break;
-        case 't': _topicRestricted = set;       break;
+        case 'k':             key_ = context;   break;
+        case 'i':      inviteOnly_ = set;       break;
+        case 't': topicRestricted_ = set;       break;
         case 'o': {
             catchInvalidValue('o', context.c_str());
             int clientFd = atoi(context.c_str());
             if (not isMember(clientFd))
                 throw runtime_error("The client is not a channel member");
-            if (set) _operators[clientFd] = _members[clientFd];
-            else     _operators.erase(clientFd);
+            if (set) operators_[clientFd] = members_[clientFd];
+            else     operators_.erase(clientFd);
             break;
         };
         case 'l': {
-            _userLimit = set ? catchInvalidValue('l', context.c_str()), atoi(context.c_str()) : 0;
+            userLimit_ = set ? catchInvalidValue('l', context.c_str()), atoi(context.c_str()) : 0;
             break;
         };
         default: throw invalid_argument("MODE " + string(1, type) + ": unknown mode");

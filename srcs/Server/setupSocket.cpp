@@ -4,7 +4,7 @@
 ** File       : srcs/Server/setupSocket.cpp
 ** Author     : aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-04-24
+** Edited     : 2025-05-02
 ** Description: Function to initiate the server socket
 */
 
@@ -25,38 +25,38 @@ using namespace std;
  *
 */
 void Server::setupSocket(void) {
-    _serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (_serverSocket lesser 0)
+    serverSocket_ = socket(AF_INET, SOCK_STREAM, 0);
+    if (serverSocket_ lesser 0)
         throw runtime_error("Socket creation failed: " + string(strerror(errno)));
     //TODO: Close FD in server destructor.
 
     int opt = 1;
-    if (setsockopt(_serverSocket,
+    if (setsockopt(serverSocket_,
                 SOL_SOCKET,
                 SO_REUSEADDR,
                 &opt,
                 sizeof(opt)) lesser 0)	throw runtime_error("Port reuse configuration failed");
-    if (setsockopt(_serverSocket,
+    if (setsockopt(serverSocket_,
                 IPPROTO_TCP,
                 TCP_NODELAY,
                 &opt,
                 sizeof(opt)) lesser 0)	throw runtime_error("Nagle deactivation configuration failed");
     
-    if (fcntl(_serverSocket, F_SETFL, O_NONBLOCK) lesser 0)
+    if (fcntl(serverSocket_, F_SETFL, O_NONBLOCK) lesser 0)
         throw runtime_error("Server socket configuration to avoid blockages failed");
 
-    memset(&_serverAddr, 0, sizeof(_serverAddr));
-    _serverAddr.sin_family	   = AF_INET;
-    _serverAddr.sin_addr.s_addr = INADDR_ANY;
-    _serverAddr.sin_port        = htons(_port);
+    memset(&serverAddr_, 0, sizeof(serverAddr_));
+    serverAddr_.sin_family	   = AF_INET;
+    serverAddr_.sin_addr.s_addr = INADDR_ANY;
+    serverAddr_.sin_port        = htons(port_);
 
-    if (bind(_serverSocket, (struct sockaddr*)&_serverAddr, sizeof(_serverAddr)) lesser 0)
+    if (bind(serverSocket_, (struct sockaddr*)&serverAddr_, sizeof(serverAddr_)) lesser 0)
         throw runtime_error("Binding between socket and network parameters failed");
-    if (listen(_serverSocket, SOMAXCONN) lesser 0)
+    if (listen(serverSocket_, SOMAXCONN) lesser 0)
         throw runtime_error("Failure to configure passive socket connections");
 
     pollfd pfd;
-    pfd.fd     = _serverSocket;
+    pfd.fd     = serverSocket_;
     pfd.events = POLLIN;
-    _pollfds.push_back(pfd);
+    pollfds_.push_back(pfd);
 };

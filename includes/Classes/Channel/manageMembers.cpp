@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Channel/manageMembers.cpp
 ** Author     : aheitz
 ** Created    : 2025-04-28
-** Edited     : 2025-04-28
+** Edited     : 2025-05-02
 ** Description: All useful functions for managing members in the channel
 */
 
@@ -19,7 +19,7 @@
  */
 void Channel::addClient(Client* client) {
     if (not isMember(client->getFileDescriptor()))
-        _members[client->getFileDescriptor()] = client;
+        members_[client->getFileDescriptor()] = client;
 };
 
 /**
@@ -27,7 +27,7 @@ void Channel::addClient(Client* client) {
  * 
  * @param clientFd The client descriptor in question
  */
-void Channel::removeClient(const int clientFd) { _operators.erase(clientFd); _members.erase(clientFd); };
+void Channel::removeClient(const int clientFd) { operators_.erase(clientFd); members_.erase(clientFd); };
 
 /**
  * @brief Checks whether a client's file descriptor is registered in a channel
@@ -36,7 +36,7 @@ void Channel::removeClient(const int clientFd) { _operators.erase(clientFd); _me
  * @return true If so
  * @return false Otherwise
  */
-bool Channel::isMember(const int clientFd) const { return _members.count(clientFd); };
+bool Channel::isMember(const int clientFd) const { return members_.count(clientFd); };
 
 /**
  * @brief Checks if a client is a channel operator.
@@ -45,21 +45,21 @@ bool Channel::isMember(const int clientFd) const { return _members.count(clientF
  * @return true If so
  * @return false Otherwise
  */
-bool Channel::isOperator(const int clientFd) const { return _operators.count(clientFd); };
+bool Channel::isOperator(const int clientFd) const { return operators_.count(clientFd); };
 
 /**
  * @brief Getter to get the complete list of members
  * 
  * @return const map<int, Client*>& The container of members
  */
-const map<int, Client*> &Channel::getMembers(void) const { return _members; };
+const map<int, Client*> &Channel::getMembers(void) const { return members_; };
 
 /**
  * @brief Getter to get the complete list of operators
  * 
  * @return const map<int, Client*>& The container of operators
  */
-const map<int, Client*> &Channel::getOperators(void) const { return _operators; };
+const map<int, Client*> &Channel::getOperators(void) const { return operators_; };
 
 /**
  * @brief Getter to get a specific channel member
@@ -67,7 +67,7 @@ const map<int, Client*> &Channel::getOperators(void) const { return _operators; 
  * @param clientFd The descriptor of a client to search for
  * @return Client* The client object
  */
-Client *Channel::getClient(const int clientFd) const { return isMember(clientFd) ? _members.find(clientFd)->second : NULL; };
+Client *Channel::getClient(const int clientFd) const { return isMember(clientFd) ? members_.find(clientFd)->second : NULL; };
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
@@ -80,15 +80,15 @@ Client *Channel::getClient(const int clientFd) const { return isMember(clientFd)
  void Channel::tryJoin(Client *client, const string &providedKey) {
     if (isMember(client->getFileDescriptor()))
         throw runtime_error("Client already connected");
-    else if (_userLimit and _members.size() at_least _userLimit) 
+    else if (userLimit_ and members_.size() at_least userLimit_) 
         throw runtime_error("Channel already full");
-    else if (_inviteOnly and not isInvited(client->getFileDescriptor()))
+    else if (inviteOnly_ and not isInvited(client->getFileDescriptor()))
         throw runtime_error("Channel requires an invitation");
-    else if (not _key.empty() and providedKey not_eq _key)
+    else if (not key_.empty() and providedKey not_eq key_)
         throw runtime_error("A valid password is required");
     else {
         addClient(client);
-        if (_inviteOnly)
+        if (inviteOnly_)
             removeInvitation(client->getFileDescriptor());
     }   
 };

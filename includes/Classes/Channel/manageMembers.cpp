@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Channel/manageMembers.cpp
 ** Author     : aheitz
 ** Created    : 2025-04-28
-** Edited     : 2025-05-02
+** Edited     : 2025-05-06
 ** Description: All useful functions for managing members in the channel
 */
 
@@ -37,6 +37,14 @@ void Channel::removeClient(const int clientFd) { operators_.erase(clientFd); mem
  * @return false Otherwise
  */
 bool Channel::isMember(const int clientFd) const { return members_.count(clientFd); };
+
+//TODO: Securing the operation here?
+/**
+ * @brief Promotes a member to operator rank
+ * 
+ * @param clientFd The client
+ */
+void Channel::promoteOperator(const int clientFd) { operators_[clientFd] = members_[clientFd]; };
 
 /**
  * @brief Checks if a client is a channel operator.

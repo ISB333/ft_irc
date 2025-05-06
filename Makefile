@@ -25,9 +25,10 @@ RED = \033[31;1m
 WHITE = \033[0;37m
 YELLOW = \033[0;33m
 
-SRC = ./srcs
-SERVER = ./srcs/Server
+SRC     = ./srcs
+SERVER  = ./srcs/Server
 COMMAND = ./srcs/Command
+SAVE    = ./srcs/Save
 CHANNEL = ./includes/Classes/Channel
 OBJ_DIR = .obj
 
@@ -36,6 +37,7 @@ SRCS := $(SRC)/main.cpp              \
 		$(SERVER)/getChannel.cpp     \
 		$(SERVER)/setupSocket.cpp    \
 		$(SRC)/Client.cpp            \
+		$(SAVE)/channels.cpp         \
 		$(CHANNEL)/Channel.cpp       \
 		$(CHANNEL)/inviteMode.cpp    \
 		$(CHANNEL)/manageMembers.cpp \

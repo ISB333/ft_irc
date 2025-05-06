@@ -4,7 +4,7 @@
 ** File       : includes/libraries.hpp
 ** Author     : aheitz
 ** Created    : 2025-04-22
-** Edited     : 2025-05-02
+** Edited     : 2025-05-06
 ** Description: List of macros used throughout the project
 */
 
@@ -22,3 +22,5 @@
 #define ERR_NEEDMOREPARAMS   461
 #define ERR_UNKNOWNMODE      472
 #define ERR_CHANOPRIVSNEEDED 482
+
+#define KEY                  0x5A

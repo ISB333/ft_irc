@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Channel/Channel.hpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-05-02
+** Edited     : 2025-05-06
 ** Description: Every channel deserves a structure to track their data
 */
 
@@ -28,22 +28,30 @@ class Channel {
 
         const std::string &getName(void)          const;
         const std::string &getTopic(void)         const;
+        const std::string &getKey(void)           const;
         bool              isInviteOnly(void)      const;
         bool              isTopicRestricted(void) const;
-        size_t            getUserLimit(void)      const;
-        
+
+        void   setUserLimit(const size_t limit);
+        size_t getUserLimit(void)                const;
+
+        void setKey(const std::string &key);
         void tryJoin(Client *client, const std::string &providedKey = "");
 
         void setTopic(const std::string &name);
         bool hasTopic(void) const;
 
+        void setInviteOnly(const bool enable);
+        void setTopicRestricted(const bool enable);
+
         void                         addClient(Client* client);
         void                         removeClient(const int clientFd);
-        bool                         isMember(const int clientFd)       const;
-        bool                         isOperator(const int clientFd)     const;
-        const std::map<int, Client*> &getMembers(void)                  const;
-        const std::map<int, Client*> &getOperators(void)                const;
-        Client                       *getClient(const int clientFd)     const;
+        bool                         isMember(const int clientFd)         const;
+        void                         promoteOperator(const int clientFd);
+        bool                         isOperator(const int clientFd)       const;
+        const std::map<int, Client*> &getMembers(void)                    const;
+        const std::map<int, Client*> &getOperators(void)                  const;
+        Client                       *getClient(const int clientFd)       const;
 
         void                inviteClient(const int clientFd);
         void                removeInvitation(const int clientFd);

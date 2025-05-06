@@ -6,7 +6,7 @@
 /*   By: adesille <adesille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 10:22:55 by adesille          #+#    #+#             */
-/*   Updated: 2025/04/30 14:46:19 by adesille         ###   ########.fr       */
+/*   Updated: 2025/05/06 12:27:00 by adesille         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -55,4 +55,8 @@ class Replies {
 		static std::string ERR_ALREADYBANNED() {
     	    return ":server 666 GTFO :You've already been Banned! Adios Boloss!\r\n";
   		}
+
+		static std::string ERR_NOTREGISTERED(const std::string& command) {
+			return ":server 451 " + command + " :You have not fully registered (PASS, NICK and USER necessary)\r\n";
+		}
 };

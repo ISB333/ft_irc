@@ -50,24 +50,50 @@ void Handler::dispatchCommand(Client* client, const std::string& message) {
     }
 }
 
-
 void	Handler::handlePassword(Client* client, const std::vector<std::string>& args) {
 	std::cout << "ME Handle PASS" << std::endl;
 	if (args.size() > 1)
 	    client->sendReply(Replies::ERR_UNKNOWNERROR("*", "PASS", "Too many arguments"));
 	else if (!args.empty() && !args[0].empty())
-    server_.authentification(client, args[0]);
+    	server_.authentification(client, args[0]);
 }
 
+/* TODO: for any command 
+	if (!client->isFullyRegistered()) {
+	    client->sendReply(Replies::ERR_NOTREGISTERED(command));
+    	return;
+	}
+*/
+
 void	Handler::handleNick(Client* client, const std::vector<std::string>& args) {
+	if (!client->isFullyRegistered()) {
+	    client->sendReply(Replies::ERR_NOTREGISTERED(args[0]));
+    	return;
+	}
+
 	std::cout << "ME Handle NICK" << std::endl;
 }
+
 void	Handler::handleUser(Client* client, const std::vector<std::string>& args) {
+	if (!client->isFullyRegistered()) {
+	    client->sendReply(Replies::ERR_NOTREGISTERED(args[0]));
+    	return;
+	}
 	std::cout << "ME Handle USER" << std::endl;
 }
+
 void	Handler::handleJoin(Client* client, const std::vector<std::string>& args) {
+	if (!client->isFullyRegistered()) {
+	    client->sendReply(Replies::ERR_NOTREGISTERED(args[0]));
+    	return;
+	}
 	std::cout << "ME Handle JOIN" << std::endl;
 }
+
 void	Handler::handlePrivmsg(Client* client, const std::vector<std::string>& args) {
+	if (!client->isFullyRegistered()) {
+	    client->sendReply(Replies::ERR_NOTREGISTERED(args[0]));
+    	return;
+	}
 	std::cout << "ME Handle PRIVMSG" << std::endl;
 }

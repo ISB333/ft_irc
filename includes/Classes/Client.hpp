@@ -92,6 +92,9 @@ class Client {
         void toggleAuthentication(const bool change) {
             if (change not_eq authenticated_)   authenticated_ = not authenticated_;
         };
+        bool isFullyRegistered(void) const {
+            return authenticated_&& !username_.empty() && !nickname_.empty();
+        }
 
         void setUsername(const string username) {         username_ = username; };
         void setNickname(const string nickname) {      inputBuffer_ = nickname; };

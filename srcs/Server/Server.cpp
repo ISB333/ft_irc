@@ -203,7 +203,6 @@ void    force_disconnect(int fd)
     close(fd);
 }
 
-
 void	Server::authentification(Client* client, std::string passwd) {
 	if (passwd == password_) {
 		std::cout << "Password Correct, you are allowed to enter in the Server" << std::endl;

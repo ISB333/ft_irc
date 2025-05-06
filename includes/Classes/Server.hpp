@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Server.hpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-05-02
+** Edited     : 2025-05-06
 ** Description: Every server deserves a structure to track their data
 */
 
@@ -50,4 +50,7 @@ class Server {
         bool    isIPBanned(const std::string &IP)   { return (bannedIPs_.find(IP) != bannedIPs_.end()); };
         void    addIPToBanList(const string IP) 	{ bannedIPs_.insert(IP); }
         void    authentification(Client* client, std::string passwd);
+
+        void    saveServerChannels(void) const;
+        void    loadServerChannels(void);
 };

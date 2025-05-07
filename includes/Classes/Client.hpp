@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Client.hpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-22
-** Edited     : 2025-05-02
+** Edited     : 2025-05-07
 ** Description: Every client deserves a structure to track their connection
 */
 
@@ -45,7 +45,10 @@ class Client {
          * @param input Data to be processed 
          * @param size The size of data
          */
-        void   appendToInputBuffer(const char input[], const size_t size) { inputBuffer_.append(input, size); };
+        void   appendToInputBuffer(const char input[], const size_t size) {
+            lastActivity_ = time(NULL);
+            inputBuffer_.append(input, size);
+        };
 
         /**
          * @brief Retrieves the next line from the buffer
@@ -67,7 +70,10 @@ class Client {
          * 
          * @param message The message to append to the output
          */
-        void appendToOutputBuffer(const string &message) { outputBuffer_ += message + CRLF; };
+        void appendToOutputBuffer(const string &message) {
+            lastActivity_ = time(NULL);
+            outputBuffer_ += message + CRLF;
+        };
 
         /**
          * @brief Clears output buffer
@@ -78,6 +84,7 @@ class Client {
         // │────────────────────────────────────────────────────────────────────────────────────│ //
 
         int          getFileDescriptor(void) const { return                            fileDescriptor_; };
+        int          getLastActivity(void)   const { return                              lastActivity_; };
         bool         getAuthentication(void) const { return                             authenticated_; };
         int          getPasswdAttempt(void)  const { return                          password_attempt_; };
         const string &getUsername(void)      const { return                                  username_; };
@@ -108,6 +115,7 @@ class Client {
         string            nickname_;
         string         inputBuffer_;
         string        outputBuffer_;
+        time_t        lastActivity_;
 
         Client(const Client &source);            // Non-instantiable
         Client &operator=(const Client &source); // Non-instantiable

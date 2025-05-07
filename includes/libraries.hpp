@@ -4,7 +4,7 @@
 ** File       : includes/libraries.hpp
 ** Author     : aheitz
 ** Created    : 2025-04-22
-** Edited     : 2025-05-06
+** Edited     : 2025-05-07
 ** Description: The complete list of libraries used by the project
 */
 
@@ -44,5 +44,6 @@
 #include <fstream>
 #include <ios>
 #include <stdint.h>
+#include <ctime>
 
 //TODO: At the very end of development, check the need for each library and put them away again.

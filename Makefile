@@ -46,6 +46,7 @@ SRCS := $(SRC)/main.cpp              \
 		$(COMMAND)/Handler.cpp       \
 		$(COMMAND)/handleMode.cpp    \
 		$(COMMAND)/handleTopic.cpp   \
+		$(COMMAND)/handleKick.cpp    \
 		$(COMMAND)/getClientIP.cpp   \
 		$(COMMAND)/formatReply.cpp   \
 		$(COMMAND)/utils.cpp 

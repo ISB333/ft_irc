@@ -24,6 +24,7 @@ Handler::Handler(Server& server) : server_(server) {
     commandMap_["PASS"]    = &Handler::handlePassword;
     commandMap_["TOPIC"]   = &Handler::handleTopic;
     commandMap_["MODE"]    = &Handler::handleMode;
+    commandMap_["KICK"]    = &Handler::handleKick;
 }
 
 std::vector<std::string> splitMessage(const std::string &message) {

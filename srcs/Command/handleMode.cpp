@@ -4,7 +4,7 @@
 ** File       : srcs/Command/handleMode.cpp
 ** Author     : aheitz
 ** Created    : 2025-04-29
-** Edited     : 2025-05-02
+** Edited     : 2025-05-07
 ** Description: Mode server command management
 */
 
@@ -35,6 +35,7 @@ void Handler::handleMode(Client *client, const vector<string> &argv) {
             return;
         };
 
+        //TODO: Enhance with a member check first.
         if (not channel->isOperator(client->getFileDescriptor())) {
             client->appendToOutputBuffer(formatReply(ERR_CHANOPRIVSNEEDED, clientNickname, channelName, "You're not channel operator"));
             return;

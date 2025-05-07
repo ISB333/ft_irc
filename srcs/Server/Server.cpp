@@ -4,14 +4,23 @@
 ** File       : srcs/Server/Server.cpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-05-02
+** Edited     : 2025-05-07
 ** Description: Definitions of server functions
 */
 
 #include "ircServ.hpp"
-#include <sys/poll.h>
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
+
+//TODO: To do when I understand what Alibaba has done:
+//TODO: Manage revents.
+//TODO: IRC notifications before socket closure.
+//TODO: Dump correctly on POLLWRNORM
+//TODO: Delete inactive clients after collecting all their IDs.
+//TODO: Send PING to client to disconnect them in case of blocking.
+//TODO: Manage SIGINT/SIGTERM.
+//TODO: Protect against flood.
+//TODO: Multithread protected MF.
 
 Server::Server(int port, const std::string& password) : password_(password), port_(port) {
 	setupSocket();
@@ -75,8 +84,7 @@ void Server::run() {
 	
 	while (true) {
 		// poll() monitors multiple file descriptors, waiting for one to become ready
-		// -1 timeout means wait indefinitely until an event occurs
-		int ret = poll(&pollfds_[0], pollfds_.size(), -1);
+		int ret = poll(&pollfds_[0], pollfds_.size(), 1000);
 		if (ret < 0) {
 			perror("poll");
 			continue;
@@ -93,6 +101,12 @@ void Server::run() {
 			if (pollfds_[i].revents & POLLIN) {
 				// POLLIN indicates there's data to read from this client
 				handleClientData(i);
+			}
+		}
+
+		for (map<int, Client *>::const_iterator it = clients_.begin(); it not_eq clients_.end(); it++) {
+			if (time(NULL) - it->second->getLastActivity() greater INACTIVITY_SECONDS) {
+				removeClient(it->second->getFileDescriptor());
 			}
 		}
 	}

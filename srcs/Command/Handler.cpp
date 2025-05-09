@@ -58,42 +58,118 @@ void	Handler::handlePassword(Client* client, const std::vector<std::string>& arg
     	server_.authentification(client, args[0]);
 }
 
-/* TODO: for any command 
-	if (!client->isFullyRegistered()) {
-	    client->sendReply(Replies::ERR_NOTREGISTERED(command));
-    	return;
-	}
-*/
+bool isValidNickname(const std::string& nickname) {
+    if (nickname.empty() || nickname.length() > 9 || std::isdigit(nickname[0]))
+        return false;
+    for (std::string::size_type i = 0; i < nickname.length(); ++i) {
+        char c = nickname[i];
+        if (!std::isalnum(c) && c != '[' && c != ']' &&
+            c != '{' && c != '}' && c != '\\' && c != '|') {
+            return false;
+        }
+    }
+    return true;
+}
 
 void	Handler::handleNick(Client* client, const std::vector<std::string>& args) {
-	if (!client->isFullyRegistered()) {
-	    client->sendReply(Replies::ERR_NOTREGISTERED(args[0]));
+	if (!client->getAuthentication()) {
+	    client->sendReply(Replies::ERR_NOTREGISTERED("NICK"));
     	return;
 	}
-
+	if (args.empty() || args[1].empty()) {
+		client->sendReply(Replies::ERR_NEEDMOREPARAMETERS("NICK"));
+		return;
+	}
+	if (server_.isNicknameAlreadyUsed(args[0])) {
+	    client->sendReply(Replies::ERR_NICKNAMEINUSE(args[0]));
+    	return;
+	}
+	else {
+		if (isValidNickname(args[0])) {
+			server_.addUser(args[0]);
+			client->setNickname(args[0]);
+		}
+		else
+			client->sendReply(Replies::ERR_ERRONEUSNICKNAME(args[0]));
+	}
 	std::cout << "ME Handle NICK" << std::endl;
 }
 
+bool isValidUsername(const std::string& username) {
+	if (username.empty())
+		return false;
+    for (size_t i = 0; i < username.length(); ++i) {
+        char c = username[i];
+        if (!isalnum(c) && c != '_' && c != '-' && c != '.') {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool isValidRealname(const std::string& realname) {
+	if (realname.empty())
+		return false;
+    for (size_t i = 0; i < realname.length(); ++i) {
+        unsigned char c = realname[i];
+        if (c < 32 || c > 126) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// TODO: Should register the Mode of the User(?)
 void	Handler::handleUser(Client* client, const std::vector<std::string>& args) {
-	if (!client->isFullyRegistered()) {
-	    client->sendReply(Replies::ERR_NOTREGISTERED(args[0]));
+	if (!client->getAuthentication() || client->getNickname().empty()) {
+	    client->sendReply(Replies::ERR_NOTREGISTERED("USER"));
     	return;
+	}
+	if (args.empty() || args.size() < 5) {
+		client->sendReply(Replies::ERR_NEEDMOREPARAMETERS("USER"));
+		return;
+	}
+	else {
+		if (isValidUsername(args[1])) {
+			if (isValidRealname(args[4])) {
+				client->sendReply(Replies::ERR_ERRONEUSREALNAME(args[4]));
+				return;
+			}
+			client->setUsername(args[1]);
+			client->setRealname(args[4]);
+		}
+		else {
+			client->sendReply(Replies::ERR_ERRONEUSUSERNAME(args[0]));
+			return;
+		}
 	}
 	std::cout << "ME Handle USER" << std::endl;
 }
 
 void	Handler::handleJoin(Client* client, const std::vector<std::string>& args) {
 	if (!client->isFullyRegistered()) {
-	    client->sendReply(Replies::ERR_NOTREGISTERED(args[0]));
+	   client->sendReply(Replies::ERR_NOTREGISTERED("JOIN"));
     	return;
 	}
+	if (args.empty() || args[0].empty()) {
+		client->sendReply(Replies::ERR_NEEDMOREPARAMETERS("JOIN"));
+		return;
+	}
+
+	(void)args;
 	std::cout << "ME Handle JOIN" << std::endl;
 }
 
 void	Handler::handlePrivmsg(Client* client, const std::vector<std::string>& args) {
 	if (!client->isFullyRegistered()) {
-	    client->sendReply(Replies::ERR_NOTREGISTERED(args[0]));
+	    client->sendReply(Replies::ERR_NOTREGISTERED("PRIVMSG"));
     	return;
 	}
+	if (args.empty() || args[0].empty()) {
+		client->sendReply(Replies::ERR_NEEDMOREPARAMETERS("PRIVMSG"));
+		return;
+	}
+
+	(void)args;
 	std::cout << "ME Handle PRIVMSG" << std::endl;
 }

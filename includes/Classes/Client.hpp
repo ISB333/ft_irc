@@ -96,6 +96,7 @@ class Client {
             return authenticated_&& !username_.empty() && !nickname_.empty();
         }
 
+        void setRealname(const string realname) {         realname_ = realname; };
         void setUsername(const string username) {         username_ = username; };
         void setNickname(const string nickname) {      inputBuffer_ = nickname; };
         void incrementPasswdAttempt()           { password_attempt_++;          };
@@ -108,6 +109,7 @@ class Client {
 		int	      password_attempt_;
         string            clientIP_;
         string            username_;
+        string            realname_;
         string            nickname_;
         string         inputBuffer_;
         string        outputBuffer_;

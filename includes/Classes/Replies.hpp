@@ -6,7 +6,7 @@
 /*   By: adesille <adesille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 10:22:55 by adesille          #+#    #+#             */
-/*   Updated: 2025/05/06 12:27:00 by adesille         ###   ########.fr       */
+/*   Updated: 2025/05/09 12:02:22 by adesille         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -36,6 +36,14 @@ class Replies {
 			return ":server 433 " + nickname + " :Nickname is already in use\r\n";
 		}
 
+		static std::string ERR_ERRONEUSUSERNAME(const std::string& username) {
+			return ":server 468 " + username + " :Erroneous username\r\n";
+		}
+
+		static std::string ERR_ERRONEUSREALNAME(const std::string& realname) {
+			return ":server 468 " + realname + " :Erroneous realname\r\n";
+		}
+
 		static std::string ERR_PASSWDMISMATCH(const std::string& passwd, const int attempts) {
 			return ":server 464 " + passwd + " :Password incorrect, " + intToString(3 - attempts) + " attempts left\r\n";
 		}
@@ -59,4 +67,9 @@ class Replies {
 		static std::string ERR_NOTREGISTERED(const std::string& command) {
 			return ":server 451 " + command + " :You have not fully registered (PASS, NICK and USER necessary)\r\n";
 		}
+
+		static std::string ERR_NEEDMOREPARAMETERS(const std::string& command) {
+			return ":server 461 * " + command + " :Not enough parameters\r\n";
+		}
+
 };

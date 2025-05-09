@@ -33,21 +33,32 @@ class Server {
         int                        serverSocket_;
         Handler*                        handler_;
         set<string>                   bannedIPs_;
+        set<string>             registeredUsers_;
+
 
         void    setupSocket();
         void    handleNewConnection();
         void    handleClientData(int index);
-        void    processCommand(Client* client, const std::string& message);
+        void    processCommand(Client* client, const string& message);
         void    removeClient(int fd);
         void    broadcastMessage(const std::string& message, Client* sender, Channel* channel = NULL);
 
     public:
-        Server(int port, const std::string& password);
+        Server(int port, const string& password);
         ~Server();
 
         void    run();
-        Channel *getChannel(const std::string &channelName) const;
-        bool    isIPBanned(const std::string &IP)   { return (bannedIPs_.find(IP) != bannedIPs_.end()); };
-        void    addIPToBanList(const string IP) 	{ bannedIPs_.insert(IP); }
+        Channel *getChannel(const string &channelName) const;
         void    authentification(Client* client, std::string passwd);
+
+        void    addIPToBanList(const string IP) 	        {       bannedIPs_.insert(IP);       }
+        void    addUser(const std::string &username)        { registeredUsers_.insert(username); }
+
+        bool    isIPBanned(const string &IP)   {
+            return (bannedIPs_.find(IP) != bannedIPs_.end());
+        };
+        bool    isNicknameAlreadyUsed(const string username) {
+            return registeredUsers_.find(username) != registeredUsers_.end();
+        };
+
 };

@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Client.hpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-22
-** Edited     : 2025-05-07
+** Edited     : 2025-05-10
 ** Description: Every client deserves a structure to track their connection
 */
 
@@ -105,6 +105,8 @@ class Client {
         void incrementPasswdAttempt()           { password_attempt_++;          };
         void sendReply(const std::string& message);
         void handleCommand(const std::string& command, const std::vector<std::string>& args);
+
+        void updateActivity(void) { lastActivity_ = time(NULL); };
 
     private:
         const int   fileDescriptor_;

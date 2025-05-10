@@ -39,11 +39,10 @@
 #include <cctype>
 #include <limits>
 #include <set>
-#include <arpa/inet.h>
-#include <netinet/in.h>
 #include <fstream>
 #include <ios>
 #include <stdint.h>
 #include <ctime>
+#include <memory>
 
 //TODO: At the very end of development, check the need for each library and put them away again.

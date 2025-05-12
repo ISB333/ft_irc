@@ -4,7 +4,7 @@
 ** File       : includes/libraries.hpp
 ** Author     : aheitz
 ** Created    : 2025-04-22
-** Edited     : 2025-05-07
+** Edited     : 2025-05-10
 ** Description: List of macros used throughout the project
 */
 
@@ -27,3 +27,5 @@
 
 #define POLL_TIMEOUT         1000
 #define INACTIVITY_SECONDS   300
+
+#define IRC_LIMIT            512

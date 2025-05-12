@@ -4,7 +4,7 @@
 ** File       : srcs/Command/Handler.cpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-25
-** Edited     : 2025-05-02
+** Edited     : 2025-05-12
 ** Description: Handler class member functions
 */
 
@@ -57,7 +57,7 @@ void	Handler::handlePassword(Client* client, const std::vector<std::string>& arg
 	if (args.size() > 1)
 	    client->sendReply(Replies::ERR_UNKNOWNERROR("*", "PASS", "Too many arguments"));
 	else if (!args.empty() && !args[0].empty())
-    server_.authentification(client, args[0]);
+    server_.authenticate(client, args[0]);
 }
 
 void	Handler::handleNick(Client* client, const std::vector<std::string>& args) {

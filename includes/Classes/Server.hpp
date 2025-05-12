@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Server.hpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-05-06
+** Edited     : 2025-05-12
 ** Description: Every server deserves a structure to track their data
 */
 
@@ -16,41 +16,39 @@
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-using namespace std;
-
-// │────────────────────────────────────────────────────────────────────────────────────────────│ //
-
-class Handler;
-
 class Server {
-    private:
-        vector<struct pollfd>           pollfds_;
-        map<int, Client*>               clients_;
-        map<std::string, Channel*>     channels_;
-        struct sockaddr_in           serverAddr_;
-        std::string                    password_;
-        int                                port_;
-        int                        serverSocket_;
-        Handler*                        handler_;
-        set<string>                   bannedIPs_;
-
-        void    setupSocket();
-        void    handleNewConnection();
-        void    handleClientData(int index);
-        void    processCommand(Client* client, const std::string& message);
-        void    removeClient(int fd);
-        void    broadcastMessage(const std::string& message, Client* sender, Channel* channel = NULL);
-
     public:
-        Server(int port, const std::string& password);
-        ~Server();
+        Server(const int port, const std::string &password);
+        ~Server(void);
 
-        void    run();
-        Channel *getChannel(const std::string &channelName) const;
-        bool    isIPBanned(const std::string &IP)   { return (bannedIPs_.find(IP) != bannedIPs_.end()); };
-        void    addIPToBanList(const string IP) 	{ bannedIPs_.insert(IP); }
-        void    authentification(Client* client, std::string passwd);
+        void    run(void);
+        Channel *getChannel(const std::string &name) const;
+        bool    isBanned(const std::string &ip)      const;
+        void    ban(const std::string &ip);
+        void    authenticate(Client *client, const std::string &password);
 
-        void    saveServerChannels(void) const;
-        void    loadServerChannels(void);
+        void saveServer(void) const;
+        void loadServer(void);
+
+    private:
+        const int                      port_;
+        const std::string          password_;
+        int                          socket_;
+        struct sockaddr_in          address_;
+        std::auto_ptr<Handler>      handler_;
+        vector<struct pollfd>       pollfds_;
+        map<std::string, Channel*> channels_;
+        map<int, Client*>           clients_;
+        set<std::string>             banned_;
+
+        void   setupSocket(void);
+        void   onClientConnection(void);
+        void   onClientReadable(const int fd);
+        void   onClientWritable(const int fd);
+        void   removeClient(const int fd, const std::string &reason);
+        size_t disconnectInactives(void);
+        void   removePollout(const int fd);
+
+        Server(const Server &src);            // Non-instantiable
+        Server &operator=(const Server &src); // Non-instantiable
 };

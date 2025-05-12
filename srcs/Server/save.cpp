@@ -1,15 +1,24 @@
 /* ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
 ** │  Project : ft_irc – IRC Server                                                                │
 ** └───────────────────────────────────────────────────────────────────────────────────────────────┘
-** File       : srcs/Save/channels.cpp
+** File       : srcs/Server/save.cpp
 ** Author     : aheitz
 ** Created    : 2025-05-02
-** Edited     : 2025-05-06
+** Edited     : 2025-05-12
 ** Description: Maintaining channels state for server-side persistence
 */
 
-//TODO: Create save folder if non-existent.
-//TODO: Check that the .save/ folder is open before opening the file, to avoid any unexpected exceptions.
+//TODO:  Create save folder if non-existent.
+//TODO:  Check that the .save/ folder is open before opening the file, to avoid any unexpected exceptions.
+//TODO:  Add all parameters to save.
+//FIXME: Open in trunc mode to start from a blank file.
+//TODO:  Write a fixed header (magic + version) at the beginning of the file.
+//TODO:  Atomicity of writing with a temp.
+//FIXME: Standardize count and userLimit types.
+//TODO:  Manage endianess. 
+//FIXME: Check stream status after each write/read.
+//FIXME: In loadServer(), replace while (peek() != EOF) with while (file.good()).
+//TODO:  Handle exceptions in loadServer.
 
 #include "ircServ.hpp"
 
@@ -62,7 +71,7 @@ static inline void writeData(ostream &file, T value) {
  * @brief Saves all channels in a binary file
  * 
  */
-void Server::saveServerChannels(void) const {
+void Server::saveServer(void) const {
     ofstream saveFile(".save/channels.bin", ios::binary);
     if (not saveFile.is_open())
         throw runtime_error("Failed to open backup file");
@@ -147,7 +156,7 @@ static inline T readData(istream &file) {
  * @brief Function for loading all server channels
  * 
  */
-void Server::loadServerChannels(void) {
+void Server::loadServer(void) {
     ifstream saveFile(".save/channels.bin", ios::binary);
     if (not saveFile.is_open())
         throw runtime_error("Failed to open backup file");

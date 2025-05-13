@@ -9,6 +9,7 @@
 */
 
 #include "ircServ.hpp"
+#include <sys/poll.h>
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
@@ -39,36 +40,11 @@ size_t Server::disconnectInactives(void) {
     return toDisconnect.size();
 };
 
-/**
- * @brief Removes a client from the server and its channels and notifies it.
- * 
- * @param fd The client to remove
- * @param reason The message to justify the disconnection
- */
 void Server::removeClient(const int fd, const string &reason) {
-    try {
-        map<int, Client*>::iterator it = clients_.find(fd);
-        if (it eq clients_.end())
-            return;
-        Client *cli = it->second;
-    
+    map<int, Client*>::iterator cli = clients_.find(fd);
+    if (cli not_eq clients_.end()) {
         if (not reason.empty())
-            cli->sendReply(reason);
-    
-        for (map<string, Channel *>::const_iterator ch = channels_.begin(); ch not_eq channels_.end(); ch++)
-            if (ch->second->isMember(fd))
-                ch->second->removeClient(fd);
-    
-        for (size_t i = 0; i lesser pollfds_.size(); i++)
-            if (pollfds_[i].fd eq fd) {
-                pollfds_.erase(pollfds_.begin() + i); break;
-            }
-    
-        shutdown(fd, SHUT_RDWR); close(fd);
-        clients_.erase(it); delete cli;
-    } catch (const exception &error) {
-        cerr << "removeClient() failed: " << error.what()   << endl;
-    } catch (...) {
-        cerr << "removeClient() failed (unknown exception)" << endl;
+            reply(cli->second, reason);
+        inactives_.insert(cli->second->getFd());
     };
 };

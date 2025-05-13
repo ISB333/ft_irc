@@ -107,3 +107,13 @@ Channel *Server::getChannel(const string &name) const {
     if (occurrence eq channels_.end())  throw out_of_range("Channel not found: " + name);
     return occurrence->second;
 };
+
+void Server::reply(Client *cli, const std::string &msg) {
+    if (not msg.empty())
+        cli->appendOutput(msg);
+    for (size_t i = 1; i lesser pollfds_.size(); i++)
+        if (pollfds_[i].fd        eq cli->getFd()) {
+            pollfds_[i].events or_eq POLLOUT;
+            break;
+        };
+};

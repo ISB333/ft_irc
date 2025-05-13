@@ -29,26 +29,30 @@ SRC     = ./srcs
 SERVER  = ./srcs/Server
 COMMAND = ./srcs/Command
 CHANNEL = ./includes/Classes/Channel
+HANDLER = ./srcs/Handler
 OBJ_DIR = .obj
 
-SRCS := $(SRC)/main.cpp              \
-		$(SERVER)/authenticate.cpp   \
-		$(SERVER)/disconnections.cpp \
-		$(SERVER)/run.cpp            \
-		$(SERVER)/save.cpp           \
-		$(SERVER)/Server.cpp         \
-		$(SRC)/Client.cpp            \
-		$(CHANNEL)/Channel.cpp       \
-		$(CHANNEL)/inviteMode.cpp    \
-		$(CHANNEL)/manageMembers.cpp \
-		$(CHANNEL)/setMode.cpp       \
-		$(COMMAND)/parseLine.cpp     \
-		$(COMMAND)/Handler.cpp       \
-		$(COMMAND)/handleMode.cpp    \
-		$(COMMAND)/handleTopic.cpp   \
-		$(COMMAND)/handleKick.cpp    \
-		$(COMMAND)/formatReply.cpp   \
-		$(COMMAND)/utils.cpp 
+SRCS := $(SRC)/main.cpp               \
+		$(SERVER)/authenticate.cpp    \
+		$(SERVER)/disconnections.cpp  \
+		$(SERVER)/run.cpp             \
+		$(SERVER)/save.cpp            \
+		$(SERVER)/Server.cpp          \
+		$(SRC)/Client.cpp             \
+		$(CHANNEL)/Channel.cpp        \
+		$(CHANNEL)/inviteMode.cpp     \
+		$(CHANNEL)/manageMembers.cpp  \
+		$(CHANNEL)/setMode.cpp        \
+		$(COMMAND)/parseLine.cpp      \
+		$(COMMAND)/handleMode.cpp     \
+		$(COMMAND)/handleTopic.cpp    \
+		$(COMMAND)/handleKick.cpp     \
+		$(COMMAND)/formatReply.cpp    \
+		$(COMMAND)/utils.cpp 		  \
+		$(HANDLER)/Handler.cpp        \
+        $(HANDLER)/Authentication.cpp \
+        $(HANDLER)/join.cpp           \
+        $(HANDLER)/privMSG.cpp
 
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
 

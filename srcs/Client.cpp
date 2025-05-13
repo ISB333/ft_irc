@@ -9,6 +9,8 @@
 */
 
 #include "ircServ.hpp"
+#include <cerrno>
+#include <unistd.h>
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
@@ -78,11 +80,6 @@ void Client::setRealname(const string realname)  { realname_ = realname; };
 void Client::incrementAttempt(void)              { ++attempt_;           };
 
 void Client::updateActivity(void)                { activity_  = time(NULL); };
-
-//TODO: The function is dangerous and should check and process send().
-void Client::sendReply(const std::string& message) {
-    send(fd_, (message + CRLF).c_str(), message.size(), 0);
-}
 
 bool Client::isFullyRegistered(void) const {
 	return auth_&& !username_.empty() && !nickname_.empty();

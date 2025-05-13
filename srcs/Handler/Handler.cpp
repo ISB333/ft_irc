@@ -47,6 +47,6 @@ void Handler::dispatchCommand(Client* client, const string& message) {
     if (it != commandMap_.end()) {
         (this->*(it->second))(client, cmd.argv);
     } else {
-        client->sendReply(Replies::ERR_UNKNOWNCOMMAND(client->getNickname(), cmd.name));
+		server_.reply(client, Replies::ERR_UNKNOWNCOMMAND(client->getNickname(), cmd.name));
     }
 }

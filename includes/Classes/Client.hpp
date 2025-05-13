@@ -19,10 +19,6 @@
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-using namespace std;
-
-// │────────────────────────────────────────────────────────────────────────────────────────────│ //
-
 /**
  * @brief The class containing all the information and functions for connected clients
  * 
@@ -50,14 +46,14 @@ class Client {
         /**
          * @brief Retrieves the next line from the buffer
          * 
-         * @return string The full line
+         * @return std::string The full line
          */
-        string popInputBuffer(void) {
+        std::string popInputBuffer(void) {
             size_t position = inputBuffer_.find(CRLF);
 
-            if (position eq string::npos)   return "";
+            if (position eq std::string::npos)   return "";
 
-            string line = inputBuffer_.substr(0, position);
+            std::string line = inputBuffer_.substr(0, position);
                           inputBuffer_.erase(0,  position + 2);
             return line;
         };
@@ -67,25 +63,26 @@ class Client {
          * 
          * @param message The message to append to the output
          */
-        void appendToOutputBuffer(const string &message) { outputBuffer_ += message + CRLF; };
+        void appendToOutputBuffer(const std::string &message) { outputBuffer_ += message + CRLF; };
 
         /**
          * @brief Clears output buffer
          * 
          */
         void clearOutputBuffer(void) { outputBuffer_.clear(); };
+        void clearInputBuffer(void) { inputBuffer_.clear(); };
 
         // │────────────────────────────────────────────────────────────────────────────────────│ //
 
         int          getFileDescriptor(void) const { return                            fileDescriptor_; };
         bool         getAuthentication(void) const { return                             authenticated_; };
         int          getPasswdAttempt(void)  const { return                          password_attempt_; };
-        const string &getUsername(void)      const { return                                  username_; };
-        const string &getNickname(void)      const { return                                  nickname_; };
-        const string &getIP(void)            const { return                                  clientIP_; };
-        const string getPrefix(void)         const { return nickname_ + "!" + username_ + "@localhost"; };
-        const string &getInputBuffer(void)   const { return                               inputBuffer_; };
-        const string &getOutputBuffer(void)  const { return                              outputBuffer_; };
+        const std::string &getUsername(void)      const { return                                  username_; };
+        const std::string &getNickname(void)      const { return                                  nickname_; };
+        const std::string &getIP(void)            const { return                                  clientIP_; };
+        const std::string getPrefix(void)         const { return nickname_ + "!" + username_ + "@localhost"; };
+        const std::string &getInputBuffer(void)   const { return                               inputBuffer_; };
+        const std::string &getOutputBuffer(void)  const { return                              outputBuffer_; };
 
         // │────────────────────────────────────────────────────────────────────────────────────│ //
 
@@ -96,23 +93,23 @@ class Client {
             return authenticated_&& !username_.empty() && !nickname_.empty();
         }
 
-        void setRealname(const string realname) {         realname_ = realname; };
-        void setUsername(const string username) {         username_ = username; };
-        void setNickname(const string nickname) {      inputBuffer_ = nickname; };
+        void setRealname(const std::string realname) {         realname_ = realname; };
+        void setUsername(const std::string username) {         username_ = username; };
+        void setNickname(const std::string nickname) {      inputBuffer_ = nickname; };
         void incrementPasswdAttempt()           { password_attempt_++;          };
         void sendReply(const std::string& message);
         void handleCommand(const std::string& command, const std::vector<std::string>& args);
 
     private:
-        const int   fileDescriptor_;
-        bool         authenticated_;
-		int	      password_attempt_;
-        string            clientIP_;
-        string            username_;
-        string            realname_;
-        string            nickname_;
-        string         inputBuffer_;
-        string        outputBuffer_;
+        const int        fileDescriptor_;
+        bool              authenticated_;
+		int	           password_attempt_;
+        std::string            clientIP_;
+        std::string            username_;
+        std::string            realname_;
+        std::string            nickname_;
+        std::string         inputBuffer_;
+        std::string        outputBuffer_;
 
         Client(const Client &source);            // Non-instantiable
         Client &operator=(const Client &source); // Non-instantiable

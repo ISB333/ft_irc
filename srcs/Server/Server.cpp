@@ -109,8 +109,8 @@ void Server::handleClientData(int index) {
 	int fd = pollfds_[index].fd;
 	Client* client = clients_[fd];
 	// IRC protocol limits messages to 512 bytes including CRLF
-	char buffer[512];
 	// recv() reads data from socket into buffer
+	char buffer[512];
 	ssize_t bytesRead = recv(fd, buffer, sizeof(buffer), 0);
 
 	if (bytesRead <= 0) {
@@ -125,8 +125,17 @@ void Server::handleClientData(int index) {
 	// IRC messages are terminated by \r\n
 	// Process complete messages while leaving partial messages in buffer
 	std::string s = client->popInputBuffer();		
-	if (!s.empty())
+	// size_t pos;
+	// while ((pos = s.find("\r\n")) != std::string::npos) {
+	// 	std::string message = s.substr(0, pos + 2);
+	// 	s = s.substr(pos + 2);
+
+	// 	client->set
+	// }
+
+	if (!s.empty()) {
 		processCommand(client, s);
+	}
 }
 
 void Server::processCommand(Client* client, const std::string& message) {

@@ -10,7 +10,7 @@
 
 #include "ircServ.hpp"
 
-std::string    getClientIP(int fd)
+string    getClientIP(int fd)
 {
     struct sockaddr_in  addr;
     socklen_t           len = sizeof(addr);
@@ -18,5 +18,5 @@ std::string    getClientIP(int fd)
     if (getpeername(fd, (struct sockaddr *)&addr, &len) < 0)
         return ("");
 
-    return (std::string(inet_ntoa(addr.sin_addr)));
+    return (string(inet_ntoa(addr.sin_addr)));
 }

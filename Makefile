@@ -32,7 +32,7 @@ CHANNEL = ./includes/Classes/Channel
 OBJ_DIR = .obj
 
 SRCS := $(SRC)/main.cpp              \
-		$(SERVER)/authentication.cpp \
+		$(SERVER)/authenticate.cpp \
 		$(SERVER)/disconnections.cpp \
 		$(SERVER)/run.cpp            \
 		$(SERVER)/save.cpp           \

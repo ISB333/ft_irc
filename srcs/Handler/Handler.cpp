@@ -27,12 +27,12 @@ Handler::Handler(Server& server) : server_(server) {
     commandMap_["KICK"]    = &Handler::handleKick;
 }
 
-std::vector<std::string> splitMessage(const std::string &message) {
-    std::vector<std::string> tokens;
-    std::string token;
-    std::istringstream tokenStream(message);
+vector<string> splitMessage(const string &message) {
+    vector<string> tokens;
+    string token;
+    istringstream tokenStream(message);
     
-    while (std::getline(tokenStream, token, ' ')) {
+    while (getline(tokenStream, token, ' ')) {
         if (!token.empty()) {
             tokens.push_back(token);
         }
@@ -40,43 +40,13 @@ std::vector<std::string> splitMessage(const std::string &message) {
     return tokens;
 }
 
-void Handler::dispatchCommand(Client* client, const std::string& message) {
+void Handler::dispatchCommand(Client* client, const string& message) {
     Command cmd = parseLine(message); 
 
-    std::map<std::string, CommandFunction>::iterator it = commandMap_.find(cmd.name);
+    map<string, CommandFunction>::iterator it = commandMap_.find(cmd.name);
     if (it != commandMap_.end()) {
         (this->*(it->second))(client, cmd.argv);
     } else {
         client->sendReply(Replies::ERR_UNKNOWNCOMMAND(client->getNickname(), cmd.name));
     }
-}
-
-
-void	Handler::handlePassword(Client* client, const std::vector<std::string>& args) {
-	std::cout << "ME Handle PASS" << std::endl;
-	if (args.size() > 1)
-	    client->sendReply(Replies::ERR_UNKNOWNERROR("*", "PASS", "Too many arguments"));
-	else if (!args.empty() && !args[0].empty())
-    server_.authenticate(client, args[0]);
-}
-
-void	Handler::handleNick(Client* client, const std::vector<std::string>& args) {
-	std::cout << "ME Handle NICK" << std::endl;
-	(void)client;
-	(void)args;
-}
-void	Handler::handleUser(Client* client, const std::vector<std::string>& args) {
-	std::cout << "ME Handle USER" << std::endl;
-	(void)client;
-	(void)args;
-}
-void	Handler::handleJoin(Client* client, const std::vector<std::string>& args) {
-	std::cout << "ME Handle JOIN" << std::endl;
-	(void)args;
-	(void)client;
-}
-void	Handler::handlePrivmsg(Client* client, const std::vector<std::string>& args) {
-	std::cout << "ME Handle PRIVMSG" << std::endl;
-	(void)client;
-	(void)args;
 }

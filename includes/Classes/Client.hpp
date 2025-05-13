@@ -32,6 +32,7 @@ class Client {
         int          getFd(void)           const;
         int          getActivity(void)     const;
         bool         isAuthenticated(void) const;
+        bool         isPassAuth(void)      const;
         int          getAttempt(void)      const;
         const string &getUsername(void)    const;
         const string &getNickname(void)    const;
@@ -41,6 +42,7 @@ class Client {
         const string &getOutput(void)      const;
 
         void authenticate(const bool change);
+        void authenticatePass(const bool change);
         void setUsername(const std::string &username);
         void setRealname(const std::string realname);
         void setNickname(const std::string &nickname);
@@ -54,6 +56,7 @@ class Client {
     private:
         const int    fd_;
         bool       auth_;
+        bool   authPass_;
 		int     attempt_;
         string       ip_;
         string username_;

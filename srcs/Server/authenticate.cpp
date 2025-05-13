@@ -39,15 +39,21 @@ void    force_disconnect(int fd)
     close(fd);
 }
 
-void Server::authenticate(Client *client, const std::string &password) {
+void Server::passwdManager(Client *client, const std::string &password) {
+	if (client->isPassAuth()) {
+		client->sendReply(Replies::ERR_ALREADYREGISTERED());
+		return;
+	}
     if (password == password_) {
         std::cout << "Password Correct, you are allowed to enter in the Server" << std::endl;
-        client->authenticate(true);
+        client->authenticatePass(true);
     }
+	// FIXME: can reconnect through same IP
     else if (isBanned(client->getIp())) {
         client->sendReply(Replies::ERR_ALREADYBANNED());
-        force_disconnect(client->getFd());
+		int fd = client->getFd();
         removeClient(client->getFd(), "TO DEFINE");
+        force_disconnect(fd);
     }
     else {
         client->incrementAttempt();
@@ -56,8 +62,9 @@ void Server::authenticate(Client *client, const std::string &password) {
              client->sendReply(Replies::ERR_PASSWDMISMATCH(password, passwdAttempt));
             client->sendReply(Replies::ERR_YOUREBANNEDCREEP());
             ban(client->getIp());
-            force_disconnect(client->getFd());
+			int fd = client->getFd();
             removeClient(client->getFd(), "TO DEFINE");
+            force_disconnect(fd);
         }
         else if (passwdAttempt == 2) {
              client->sendReply(Replies::ERR_PASSWDMISMATCH(password, passwdAttempt));

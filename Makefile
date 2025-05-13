@@ -28,6 +28,7 @@ YELLOW = \033[0;33m
 SRC     = ./srcs
 SERVER  = ./srcs/Server
 COMMAND = ./srcs/Command
+HANDLER = ./srcs/Handler
 CHANNEL = ./includes/Classes/Channel
 OBJ_DIR = .obj
 
@@ -43,12 +44,15 @@ SRCS := $(SRC)/main.cpp              \
 		$(CHANNEL)/manageMembers.cpp \
 		$(CHANNEL)/setMode.cpp       \
 		$(COMMAND)/parseLine.cpp     \
-		$(COMMAND)/Handler.cpp       \
 		$(COMMAND)/handleMode.cpp    \
 		$(COMMAND)/handleTopic.cpp   \
 		$(COMMAND)/handleKick.cpp    \
 		$(COMMAND)/formatReply.cpp   \
-		$(COMMAND)/utils.cpp 
+		$(COMMAND)/utils.cpp         \
+		$(HANDLER)/Handler.cpp       \
+		$(HANDLER)/Authentication.cpp\
+		$(HANDLER)/join.cpp 		 \
+		$(HANDLER)/privMSG.cpp
 
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
 

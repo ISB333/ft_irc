@@ -26,7 +26,7 @@ using namespace std;
 
 void	Handler::handleJoin(Client* client, const vector<string>& args) {
 	if (!client->isFullyRegistered()) {
-	   client->sendReply(Replies::ERR_NOTREGISTERED("JOIN"));
+	    client->sendReply(Replies::ERR_NOTREGISTERED("JOIN"));
     	return;
 	}
 	if (args.empty() || args[0].empty()) {

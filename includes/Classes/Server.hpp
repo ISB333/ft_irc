@@ -25,7 +25,7 @@ class Server {
         Channel *getChannel(const std::string &name) const;
         bool    isBanned(const std::string &ip)      const;
         void    ban(const std::string &ip);
-        void    authenticate(Client *client, const std::string &password);
+        void    passwdManager(Client *client, const std::string &password);
 
         void    saveServer(void) const;
         void    loadServer(void);

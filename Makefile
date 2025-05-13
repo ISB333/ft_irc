@@ -32,7 +32,7 @@ CHANNEL = ./includes/Classes/Channel
 OBJ_DIR = .obj
 
 SRCS := $(SRC)/main.cpp              \
-		$(SERVER)/authenticate.cpp \
+		$(SERVER)/authenticate.cpp   \
 		$(SERVER)/disconnections.cpp \
 		$(SERVER)/run.cpp            \
 		$(SERVER)/save.cpp           \
@@ -47,7 +47,6 @@ SRCS := $(SRC)/main.cpp              \
 		$(COMMAND)/handleMode.cpp    \
 		$(COMMAND)/handleTopic.cpp   \
 		$(COMMAND)/handleKick.cpp    \
-		$(COMMAND)/getClientIP.cpp   \
 		$(COMMAND)/formatReply.cpp   \
 		$(COMMAND)/utils.cpp 
 

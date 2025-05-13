@@ -21,7 +21,7 @@ void	Handler::handlePassword(Client* client, const vector<string>& args) {
 	if (args.size() > 1)
 	    client->sendReply(Replies::ERR_UNKNOWNERROR("*", "PASS", "Too many arguments"));
 	else if (!args.empty() && !args[0].empty())
-    	server_.authentification(client, args[0]);
+    	server_.authenticate(client, args[0]);
 }
 
 bool isValidNickname(const string& nickname) {
@@ -38,7 +38,7 @@ bool isValidNickname(const string& nickname) {
 }
 
 void	Handler::handleNick(Client* client, const vector<string>& args) {
-	if (!client->getAuthentication()) {
+	if (!client->isAuthenticated()) {
 	    client->sendReply(Replies::ERR_NOTREGISTERED("NICK"));
     	return;
 	}
@@ -87,7 +87,7 @@ bool isValidRealname(const string& realname) {
 
 // TODO: Should register the Mode of the User(?)
 void	Handler::handleUser(Client* client, const vector<string>& args) {
-	if (!client->getAuthentication() || client->getNickname().empty()) {
+	if (!client->isAuthenticated() || client->getNickname().empty()) {
 	    client->sendReply(Replies::ERR_NOTREGISTERED("USER"));
     	return;
 	}
@@ -102,7 +102,7 @@ void	Handler::handleUser(Client* client, const vector<string>& args) {
 				return;
 			}
 			client->setUsername(args[1]);
-			client->setRealname(args[4]);
+			// client->setRealname(args[4]); //FIXME: Fix this heresy.
 		}
 		else {
 			client->sendReply(Replies::ERR_ERRONEUSUSERNAME(args[0]));

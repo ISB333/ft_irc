@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Channel/manageMembers.cpp
 ** Author     : aheitz
 ** Created    : 2025-04-28
-** Edited     : 2025-05-06
+** Edited     : 2025-05-13
 ** Description: All useful functions for managing members in the channel
 */
 
@@ -18,8 +18,8 @@
  * @param customer The client object to be saved
  */
 void Channel::addClient(Client* client) {
-    if (not isMember(client->getFileDescriptor()))
-        members_[client->getFileDescriptor()] = client;
+    if (not isMember(client->getFd()))
+        members_[client->getFd()] = client;
 };
 
 /**
@@ -86,17 +86,17 @@ Client *Channel::getClient(const int clientFd) const { return isMember(clientFd)
  * @param providedKey A password specified by the client
  */
  void Channel::tryJoin(Client *client, const string &providedKey) {
-    if (isMember(client->getFileDescriptor()))
+    if (isMember(client->getFd()))
         throw runtime_error("Client already connected");
     else if (userLimit_ and members_.size() at_least userLimit_) 
         throw runtime_error("Channel already full");
-    else if (inviteOnly_ and not isInvited(client->getFileDescriptor()))
+    else if (inviteOnly_ and not isInvited(client->getFd()))
         throw runtime_error("Channel requires an invitation");
     else if (not key_.empty() and providedKey not_eq key_)
         throw runtime_error("A valid password is required");
     else {
         addClient(client);
         if (inviteOnly_)
-            removeInvitation(client->getFileDescriptor());
+            removeInvitation(client->getFd());
     }   
 };

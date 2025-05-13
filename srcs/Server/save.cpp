@@ -40,13 +40,13 @@ static inline void writeData(ostream &file, const string &value) {
 
     unsigned char *conversion = reinterpret_cast<unsigned char *>(&cryptLength);
     for (size_t i = 0; i lesser sizeof(length); i++)
-        conversion[i] ^= KEY;
+        conversion[i] xor_eq KEY;
     file.write((char *)&cryptLength, sizeof(length));
 
     string cryptValue = value;
     conversion = reinterpret_cast<unsigned char *>(&cryptValue[0]);
     for (size_t i = 0; i lesser length; i++)
-        conversion[i] ^= KEY;
+        conversion[i] xor_eq KEY;
     file.write(cryptValue.data(), length);
 };
 
@@ -61,7 +61,7 @@ template<typename T>
 static inline void writeData(ostream &file, T value) {
     unsigned char *conversion = reinterpret_cast<unsigned char *>(&value);
     for (uint32_t i = 0; i < sizeof(value); i++)
-        conversion[i] ^= KEY;
+        conversion[i] xor_eq KEY;
     file.write(reinterpret_cast<const char*>(&value), sizeof(value));
 };
 
@@ -82,8 +82,8 @@ void Server::saveServer(void) const {
         writeData(saveFile, channel->getName());
         writeData(saveFile, channel->getTopic());
         writeData(saveFile, channel->getKey());
-        saveFile.put(channel->isInviteOnly()      ^ KEY);
-        saveFile.put(channel->isTopicRestricted() ^ KEY);
+        saveFile.put(channel->isInviteOnly()      xor KEY);
+        saveFile.put(channel->isTopicRestricted() xor KEY);
         writeData(saveFile, channel->getUserLimit());
 
         writeData(saveFile, channel->getMembers().size());
@@ -116,7 +116,7 @@ static inline string readData(istream &file) {
 
     unsigned char *conversion = reinterpret_cast<unsigned char *>(&length);
     for (size_t i = 0; i lesser sizeof(length); i++)
-        conversion[i] ^= KEY;
+        conversion[i] xor_eq KEY;
 
     string data;
     data.resize(length);
@@ -124,7 +124,7 @@ static inline string readData(istream &file) {
     if (not file)
         throw runtime_error("Backup read failed");
     for (uint32_t i = 0; i < length; i++)
-        data[i] ^= KEY;
+        data[i] xor_eq KEY;
 
     return data;
 };
@@ -145,7 +145,7 @@ static inline T readData(istream &file) {
 
     unsigned char *conversion = reinterpret_cast<unsigned char *>(&data);
     for (uint32_t i = 0; i < sizeof(data); i++)
-        conversion[i] ^= KEY;
+        conversion[i] xor_eq KEY;
 
     return data;
 };
@@ -163,7 +163,7 @@ void Server::loadServer(void) {
 
     while (saveFile.peek() not_eq char_traits<char>::eof()) {
         string        name       = readData(saveFile), topic = readData(saveFile), key = readData(saveFile);
-        bool          inviteMode = saveFile.get() ^ KEY, topicRestriction = saveFile.get() ^ KEY;
+        bool          inviteMode = saveFile.get() xor KEY, topicRestriction = saveFile.get() xor KEY;
         size_t        userLimit  = readData<size_t>(saveFile);
 
         size_t count = readData<size_t>(saveFile);

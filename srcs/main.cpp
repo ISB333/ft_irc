@@ -26,6 +26,7 @@ static int  parsePort(const char asciiPort[]);
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
 //TODO: Complete and document the main.
+//TODO: Turning main into a nightmare.
 /**
  * @brief 
  * 

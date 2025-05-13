@@ -63,6 +63,7 @@ void Client::consumeOutput(const size_t n) { output_.erase(0, n); };
 int           Client::getFd(void)           const { return                                        fd_; };
 int           Client::getActivity(void)     const { return                                  activity_; };
 bool          Client::isAuthenticated(void) const { return                                      auth_; };
+bool          Client::isPassAuth(void)const       { return                                  authPass_; };
 int           Client::getAttempt(void)      const { return                                   attempt_; };
 const string &Client::getUsername(void)     const { return                                  username_; };
 const string &Client::getNickname(void)     const { return                                  nickname_; };
@@ -74,6 +75,7 @@ const string &Client::getOutput(void)       const { return                      
 // │────────────────────────────────────────────────────────────────────────────────────│ //
 
 void Client::authenticate(const bool change)     { auth_     = change;   };
+void Client::authenticatePass(const bool change) { authPass_ = change;   };
 void Client::setUsername(const string &username) { username_ = username; };
 void Client::setNickname(const string &nickname) { nickname_ = nickname; };
 void Client::setRealname(const string realname)  { realname_ = realname; };

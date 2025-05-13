@@ -28,6 +28,7 @@ YELLOW = \033[0;33m
 SRC     = ./srcs
 SERVER  = ./srcs/Server
 COMMAND = ./srcs/Command
+HANDLER = ./srcs/Handler
 CHANNEL = ./includes/Classes/Channel
 HANDLER = ./srcs/Handler
 OBJ_DIR = .obj

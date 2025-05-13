@@ -6,7 +6,7 @@
 /*   By: adesille <adesille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 10:22:55 by adesille          #+#    #+#             */
-/*   Updated: 2025/05/13 10:09:20 by adesille         ###   ########.fr       */
+/*   Updated: 2025/05/13 12:00:29 by adesille         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -70,6 +70,10 @@ class Replies {
 
 		static std::string ERR_NEEDMOREPARAMETERS(const std::string& command) {
 			return ":server 461 * " + command + " :Not enough parameters\r\n";
+		}
+
+		static std::string ERR_ALREADYREGISTERED() {
+			return ":server 462 * :You may not reregister\r\n";
 		}
 
 };

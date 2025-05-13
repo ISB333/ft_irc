@@ -45,7 +45,7 @@ void Server::run() {
                     else if (revents & POLLNVAL)    removeClient(fd, "ERROR :Closing Link: Invalid FD");
                     --i; continue;
                 };
-                if (revents & POLLIN)               onClientReadable(fd);
+                if (revents & POLLIN)			    onClientReadable(fd);
                 if (revents & POLLOUT)              onClientWritable(fd);
             };
             disconnectInactives(); //TODO: Possible return management.

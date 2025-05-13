@@ -27,19 +27,31 @@ class Server {
         void    ban(const std::string &ip);
         void    authenticate(Client *client, const std::string &password);
 
-        void saveServer(void) const;
-        void loadServer(void);
+        void    saveServer(void) const;
+        void    loadServer(void);
+
+        void    addIPToBanList(const string IP) 	        {       bannedIPs_.insert(IP);       }
+        void    addUser(const std::string &username)        { registeredUsers_.insert(username); }
+
+        bool    isIPBanned(const string &IP)   {
+            return (bannedIPs_.find(IP) != bannedIPs_.end());
+        };
+        bool    isNicknameAlreadyUsed(const string username) {
+            return registeredUsers_.find(username) != registeredUsers_.end();
+        };
 
     private:
         const int                      port_;
-        const std::string          password_;
+        const string               password_;
         int                          socket_;
         struct sockaddr_in          address_;
-        std::auto_ptr<Handler>      handler_;
+        auto_ptr<Handler>           handler_;
         vector<struct pollfd>       pollfds_;
-        map<std::string, Channel*> channels_;
+        map<string, Channel*>      channels_;
         map<int, Client*>           clients_;
-        set<std::string>             banned_;
+        set<string>                  banned_;
+        set<string>               bannedIPs_;
+        set<string>         registeredUsers_;
 
         void   setupSocket(void);
         void   onClientConnection(void);

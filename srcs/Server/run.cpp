@@ -9,6 +9,7 @@
 */
 
 #include "ircServ.hpp"
+#include <sys/socket.h>
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
@@ -112,6 +113,8 @@ void Server::onClientReadable(const int fd) {
     };
 };
 
+//TODO: Factorize dirty barbarian!
+
 /**
  * @brief Processing instructions sent by a client
  * 
@@ -119,19 +122,35 @@ void Server::onClientReadable(const int fd) {
  */
 void Server::onClientWritable(const int fd) {
     Client       *cli = clients_[fd];
-    const string &buf = cli->getOutput();
 
-    if (buf.empty()) { removePollout(fd); }
-    else if (not buf.empty()) {
-        const ssize_t sent = send(fd, buf.c_str(), buf.size(), 0);
-        if (sent lesser 0 and not (errno eq EAGAIN or errno eq EWOULDBLOCK)) {
-            removeClient(fd, "ERROR :Closing Link: " + string(strerror(errno)));
-        } else if (sent eq 0) {
-            removeClient(fd, "ERROR :Closing Link: connection closed by peer");
+    while (not cli->getOutput().empty()) {
+        const string  &buf  = cli->getOutput();
+        const ssize_t  sent = send(fd, buf.c_str(), buf.size(), MSG_NOSIGNAL);
+
+        if ((sent lesser 0 and not (errno eq EAGAIN or errno eq EWOULDBLOCK)) or not sent) {
+            removeClient(fd, "");
+            return;
         } else if (sent at_least 1) {
             cli->consumeOutput(sent);
-            if (cli->getOutput().empty()) removePollout(fd);
-        };
+            continue;
+        } else return;
+    };
+
+    removePollout(fd);
+    
+    if (inactives_.find(fd) not_eq inactives_.end()) {
+        for (map<string, Channel *>::const_iterator ch = channels_.begin(); ch not_eq channels_.end(); ch++)
+            if (ch->second->isMember(fd))
+                ch->second->removeClient(fd);
+    
+        for (size_t i = 0; i lesser pollfds_.size(); i++)
+            if (pollfds_[i].fd eq fd) {
+                pollfds_.erase(pollfds_.begin() + i); break;
+            };
+
+        shutdown(fd, SHUT_RDWR); close(fd);
+        clients_.erase(fd);        inactives_.erase(fd);
+        delete cli;
     };
 };
 

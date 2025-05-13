@@ -26,11 +26,11 @@ using namespace std;
 
 void	Handler::handleJoin(Client* client, const vector<string>& args) {
 	if (!client->isFullyRegistered()) {
-	    client->sendReply(Replies::ERR_NOTREGISTERED("JOIN"));
+		server_.reply(client, Replies::ERR_NOTREGISTERED("JOIN"));
     	return;
 	}
 	if (args.empty() || args[0].empty()) {
-		client->sendReply(Replies::ERR_NEEDMOREPARAMETERS("JOIN"));
+		server_.reply(client, Replies::ERR_NEEDMOREPARAMETERS("JOIN"));
 		return;
 	}
 

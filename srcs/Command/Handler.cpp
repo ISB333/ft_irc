@@ -27,12 +27,12 @@ Handler::Handler(Server& server) : server_(server) {
     commandMap_["KICK"]    = &Handler::handleKick;
 }
 
-vector<string> splitMessage(const string &message) {
-    vector<string> tokens;
-    string token;
-    istringstream tokenStream(message);
+std::vector<std::string> splitMessage(const std::string &message) {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(message);
     
-    while (getline(tokenStream, token, ' ')) {
+    while (std::getline(tokenStream, token, ' ')) {
         if (!token.empty()) {
             tokens.push_back(token);
         }
@@ -40,13 +40,22 @@ vector<string> splitMessage(const string &message) {
     return tokens;
 }
 
-void Handler::dispatchCommand(Client* client, const string& message) {
+void Handler::dispatchCommand(Client* client, const std::string& message) {
     Command cmd = parseLine(message); 
 
-    map<string, CommandFunction>::iterator it = commandMap_.find(cmd.name);
+    std::map<std::string, CommandFunction>::iterator it = commandMap_.find(cmd.name);
     if (it != commandMap_.end()) {
         (this->*(it->second))(client, cmd.argv);
     } else {
-		server_.reply(client, Replies::ERR_UNKNOWNCOMMAND(client->getNickname(), cmd.name));
+        server_.reply(client, Replies::ERR_UNKNOWNCOMMAND(client->getNickname(), cmd.name));
     }
+}
+
+
+void	Handler::handlePassword(Client* client, const std::vector<std::string>& args) {
+	std::cout << "ME Handle PASS" << std::endl;
+	if (args.size() > 1)
+	    server_.reply(client, Replies::ERR_UNKNOWNERROR("*", "PASS", "Too many arguments"));
+	else if (!args.empty() && !args[0].empty())
+    server_.authenticate(client, args[0]);
 }

@@ -40,18 +40,21 @@ class Server {
             return registeredUsers_.find(username) != registeredUsers_.end();
         };
 
+        void reply(Client *cli, const std::string &msg);
+
     private:
-        const int                      port_;
-        const string               password_;
-        int                          socket_;
-        struct sockaddr_in          address_;
-        auto_ptr<Handler>           handler_;
-        vector<struct pollfd>       pollfds_;
-        map<string, Channel*>      channels_;
-        map<int, Client*>           clients_;
-        set<string>                  banned_;
-        set<string>               bannedIPs_;
-        set<string>         registeredUsers_;
+        const int                        port_;
+        const string                 password_;
+        int                            socket_;
+        struct sockaddr_in            address_;
+        auto_ptr<Handler>             handler_;
+        vector<struct pollfd>         pollfds_;
+        map<string, Channel*>        channels_;
+        map<int, Client*>             clients_;
+        set<string>                    banned_;
+        set<string>                 bannedIPs_;
+        set<string>           registeredUsers_;
+        set<int>                    inactives_;
 
         void   setupSocket(void);
         void   onClientConnection(void);

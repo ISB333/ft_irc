@@ -9,6 +9,8 @@
 */
 
 #include "ircServ.hpp"
+#include <cerrno>
+#include <unistd.h>
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
@@ -80,36 +82,6 @@ void Client::setRealname(const string realname)  { realname_ = realname; };
 void Client::incrementAttempt(void)              { ++attempt_;           };
 
 void Client::updateActivity(void)                { activity_  = time(NULL); };
-
-//TODO: The function is dangerous and should check and process send().
-void Client::sendReply(const std::string& message) {
-    std::string fullMessage = message + CRLF;
-    ssize_t bytesSent = send(fd_, fullMessage.c_str(), fullMessage.size(), 0);
-    
-    if (bytesSent < 0) {
-        // Gestion d'erreur
-        if (errno == EAGAIN || errno == EWOULDBLOCK) {
-            // Socket non prêt pour écriture, stocker le message et réessayer plus tard
-            appendOutput(message);  // Utilise votre système existant
-            return;
-            // return 0;
-        }
-        return;
-        // return -1;  // Autre erreur
-    } else if (static_cast<size_t>(bytesSent) < fullMessage.size()) {
-        // Envoi partiel, stocker le reste pour plus tard
-        appendOutput(fullMessage.substr(bytesSent));
-        return;
-        // return bytesSent;
-    }
-    
-    return;
-    // return bytesSent;
-}
-// void Client::sendReply(const std::string& message) {
-//     send(fd_, (message + CRLF).c_str(), message.size(), 0);
-// 	// appendOutput(message);
-// }
 
 bool Client::isFullyRegistered(void) const {
 	return auth_&& !username_.empty() && !nickname_.empty();

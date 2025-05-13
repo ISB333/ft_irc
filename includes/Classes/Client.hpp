@@ -42,11 +42,14 @@ class Client {
 
         void authenticate(const bool change);
         void setUsername(const std::string &username);
+        void setRealname(const std::string realname);
         void setNickname(const std::string &nickname);
         void incrementAttempt(void);
         void updateActivity(void);
         
         void sendReply(const std::string& message);
+        void toggleAuthentication(const bool change);
+        bool isFullyRegistered(void) const;
 
     private:
         const int    fd_;
@@ -54,6 +57,7 @@ class Client {
 		int     attempt_;
         string       ip_;
         string username_;
+        string realname_;
         string nickname_;
         string    input_;
         string   output_;

@@ -17,8 +17,7 @@ using namespace std;
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
 void	Handler::handlePrivmsg(Client* client, const vector<string>& args) {
-	// if (!client->isFullyRegistered()) {
-	if (true) { //FIXME: Fix this horrible thing.
+	if (!client->isFullyRegistered()) {
 	    client->sendReply(Replies::ERR_NOTREGISTERED("PRIVMSG"));
     	return;
 	}

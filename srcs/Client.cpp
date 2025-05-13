@@ -74,6 +74,7 @@ const string &Client::getOutput(void)       const { return                      
 void Client::authenticate(const bool change)     { auth_     = change;   };
 void Client::setUsername(const string &username) { username_ = username; };
 void Client::setNickname(const string &nickname) { nickname_ = nickname; };
+void Client::setRealname(const string realname)  { realname_ = realname; };
 void Client::incrementAttempt(void)              { ++attempt_;           };
 
 void Client::updateActivity(void)                { activity_  = time(NULL); };
@@ -82,3 +83,7 @@ void Client::updateActivity(void)                { activity_  = time(NULL); };
 void Client::sendReply(const std::string& message) {
     send(fd_, (message + CRLF).c_str(), message.size(), 0);
 }
+
+bool Client::isFullyRegistered(void) const {
+	return auth_&& !username_.empty() && !nickname_.empty();
+} 

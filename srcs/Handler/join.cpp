@@ -25,8 +25,7 @@ using namespace std;
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
 void	Handler::handleJoin(Client* client, const vector<string>& args) {
-	// if (!client->isFullyRegistered()) {
-	if (true) { //FIXME: Fix this horrible thing.
+	if (!client->isFullyRegistered()) {
 	   client->sendReply(Replies::ERR_NOTREGISTERED("JOIN"));
     	return;
 	}

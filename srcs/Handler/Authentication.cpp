@@ -102,7 +102,7 @@ void	Handler::handleUser(Client* client, const vector<string>& args) {
 				return;
 			}
 			client->setUsername(args[1]);
-			// client->setRealname(args[4]); //FIXME: Fix this heresy.
+			client->setRealname(args[4]);
 		}
 		else {
 			client->sendReply(Replies::ERR_ERRONEUSUSERNAME(args[0]));

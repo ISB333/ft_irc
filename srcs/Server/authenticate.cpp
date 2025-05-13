@@ -45,7 +45,7 @@ void Server::authenticate(Client *client, const std::string &password) {
         client->authenticate(true);
     }
     else if (isBanned(client->getIp())) {
-        client->sendReply(Replies::ERR_ALREADYBANNED());
+		reply(client, Replies::ERR_ALREADYBANNED());
         force_disconnect(client->getFd());
         removeClient(client->getFd(), "TO DEFINE");
     }
@@ -53,18 +53,19 @@ void Server::authenticate(Client *client, const std::string &password) {
         client->incrementAttempt();
         int passwdAttempt = client->getAttempt();
         if (passwdAttempt == 3) {
-             client->sendReply(Replies::ERR_PASSWDMISMATCH(password, passwdAttempt));
-            client->sendReply(Replies::ERR_YOUREBANNEDCREEP());
+		    reply(client, Replies::ERR_PASSWDMISMATCH(password, passwdAttempt));
+		    reply(client, Replies::ERR_YOUREBANNEDCREEP());
+
             ban(client->getIp());
             force_disconnect(client->getFd());
             removeClient(client->getFd(), "TO DEFINE");
         }
         else if (passwdAttempt == 2) {
-             client->sendReply(Replies::ERR_PASSWDMISMATCH(password, passwdAttempt));
-             client->sendReply(Replies::ERR_YOUWILLBEBANNED());
+		    reply(client, Replies::ERR_PASSWDMISMATCH(password, passwdAttempt));
+		    reply(client, Replies::ERR_YOUWILLBEBANNED());
         }
         else
-             client->sendReply(Replies::ERR_PASSWDMISMATCH(password, passwdAttempt));
+		    reply(client, Replies::ERR_PASSWDMISMATCH(password, passwdAttempt));
     }
 }
 

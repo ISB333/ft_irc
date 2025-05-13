@@ -18,11 +18,11 @@ using namespace std;
 
 void	Handler::handlePrivmsg(Client* client, const vector<string>& args) {
 	if (!client->isFullyRegistered()) {
-	    client->sendReply(Replies::ERR_NOTREGISTERED("PRIVMSG"));
+		server_.reply(client, Replies::ERR_NOTREGISTERED("PRIVMSG"));
     	return;
 	}
 	if (args.empty() || args[0].empty()) {
-		client->sendReply(Replies::ERR_NEEDMOREPARAMETERS("PRIVMSG"));
+		server_.reply(client, Replies::ERR_NEEDMOREPARAMETERS("PRIVMSG"));
 		return;
 	}
 

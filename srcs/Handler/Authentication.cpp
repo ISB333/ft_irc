@@ -19,7 +19,7 @@ using namespace std;
 void	Handler::handlePassword(Client* client, const vector<string>& args) {
 	cout << "ME Handle PASS" << endl;
 	if (args.size() > 1)
-	    client->sendReply(Replies::ERR_UNKNOWNERROR("*", "PASS", "Too many arguments"));
+		server_.reply(client, Replies::ERR_UNKNOWNERROR("*", "PASS", "Too many arguments"));
 	else if (!args.empty() && !args[0].empty())
     	server_.authenticate(client, args[0]);
 }
@@ -39,15 +39,15 @@ bool isValidNickname(const string& nickname) {
 
 void	Handler::handleNick(Client* client, const vector<string>& args) {
 	if (!client->isAuthenticated()) {
-	    client->sendReply(Replies::ERR_NOTREGISTERED("NICK"));
+		server_.reply(client, Replies::ERR_NOTREGISTERED("NICK"));
     	return;
 	}
 	if (args.empty() || args[1].empty()) {
-		client->sendReply(Replies::ERR_NEEDMOREPARAMETERS("NICK"));
+		server_.reply(client, Replies::ERR_NEEDMOREPARAMETERS("NICK"));
 		return;
 	}
 	if (server_.isNicknameAlreadyUsed(args[0])) {
-	    client->sendReply(Replies::ERR_NICKNAMEINUSE(args[0]));
+		server_.reply(client, Replies::ERR_NICKNAMEINUSE(args[0]));
     	return;
 	}
 	else {
@@ -56,7 +56,7 @@ void	Handler::handleNick(Client* client, const vector<string>& args) {
 			client->setNickname(args[0]);
 		}
 		else
-			client->sendReply(Replies::ERR_ERRONEUSNICKNAME(args[0]));
+			server_.reply(client, Replies::ERR_ERRONEUSNICKNAME(args[0]));
 	}
 	cout << "ME Handle NICK" << endl;
 }
@@ -88,24 +88,24 @@ bool isValidRealname(const string& realname) {
 // TODO: Should register the Mode of the User(?)
 void	Handler::handleUser(Client* client, const vector<string>& args) {
 	if (!client->isAuthenticated() || client->getNickname().empty()) {
-	    client->sendReply(Replies::ERR_NOTREGISTERED("USER"));
+		server_.reply(client, Replies::ERR_NOTREGISTERED("USER"));
     	return;
 	}
 	if (args.empty() || args.size() < 5) {
-		client->sendReply(Replies::ERR_NEEDMOREPARAMETERS("USER"));
+		server_.reply(client, Replies::ERR_NEEDMOREPARAMETERS("USER"));
 		return;
 	}
 	else {
 		if (isValidUsername(args[1])) {
 			if (isValidRealname(args[4])) {
-				client->sendReply(Replies::ERR_ERRONEUSREALNAME(args[4]));
+				server_.reply(client, Replies::ERR_ERRONEUSREALNAME(args[4]));
 				return;
 			}
 			client->setUsername(args[1]);
 			client->setRealname(args[4]);
 		}
 		else {
-			client->sendReply(Replies::ERR_ERRONEUSUSERNAME(args[0]));
+			server_.reply(client, Replies::ERR_ERRONEUSUSERNAME(args[0]));
 			return;
 		}
 	}

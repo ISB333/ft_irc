@@ -4,7 +4,7 @@
 ** File       : srcs/Server/run.cpp
 ** Author     : aheitz
 ** Created    : 2025-05-07
-** Edited     : 2025-05-12
+** Edited     : 2025-05-13
 ** Description: Main server operation
 */
 
@@ -105,10 +105,10 @@ void Server::onClientReadable(const int fd) {
                                     removeClient(fd, "ERROR :Closing Link: " + string(strerror(errno)));
         } else if (not bytesRead)   removeClient(fd, "ERROR :Closing Link: Client disconnected");
     } else {
-        client->appendToInputBuffer(buffer, bytesRead);
+        client->appendInput(buffer, bytesRead);
     
         string command;
-        while (not (command = client->popInputBuffer()).empty())    handler_->dispatchCommand(client, command);
+        while (not (command = client->popInput()).empty())    handler_->dispatchCommand(client, command);
     };
 };
 
@@ -119,7 +119,7 @@ void Server::onClientReadable(const int fd) {
  */
 void Server::onClientWritable(const int fd) {
     Client       *cli = clients_[fd];
-    const string &buf = cli->getOutputBuffer();
+    const string &buf = cli->getOutput();
 
     if (buf.empty()) { removePollout(fd); }
     else if (not buf.empty()) {
@@ -130,7 +130,7 @@ void Server::onClientWritable(const int fd) {
             removeClient(fd, "ERROR :Closing Link: connection closed by peer");
         } else if (sent at_least 1) {
             cli->consumeOutput(sent);
-            if (cli->getOutputBuffer().empty()) removePollout(fd);
+            if (cli->getOutput().empty()) removePollout(fd);
         };
     };
 };

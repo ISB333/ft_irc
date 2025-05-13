@@ -42,22 +42,22 @@ void    force_disconnect(int fd)
 void Server::authenticate(Client *client, const std::string &password) {
     if (password == password_) {
         std::cout << "Password Correct, you are allowed to enter in the Server" << std::endl;
-        client->toggleAuthentication(true);
+        client->authenticate(true);
     }
-    else if (isBanned(client->getIP())) {
+    else if (isBanned(client->getIp())) {
         client->sendReply(Replies::ERR_ALREADYBANNED());
-        force_disconnect(client->getFileDescriptor());
-        removeClient(client->getFileDescriptor(), "TO DEFINE");
+        force_disconnect(client->getFd());
+        removeClient(client->getFd(), "TO DEFINE");
     }
     else {
-        client->incrementPasswdAttempt();
-        int passwdAttempt = client->getPasswdAttempt();
+        client->incrementAttempt();
+        int passwdAttempt = client->getAttempt();
         if (passwdAttempt == 3) {
              client->sendReply(Replies::ERR_PASSWDMISMATCH(password, passwdAttempt));
             client->sendReply(Replies::ERR_YOUREBANNEDCREEP());
-            ban(client->getIP());
-            force_disconnect(client->getFileDescriptor());
-            removeClient(client->getFileDescriptor(), "TO DEFINE");
+            ban(client->getIp());
+            force_disconnect(client->getFd());
+            removeClient(client->getFd(), "TO DEFINE");
         }
         else if (passwdAttempt == 2) {
              client->sendReply(Replies::ERR_PASSWDMISMATCH(password, passwdAttempt));

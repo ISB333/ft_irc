@@ -22,4 +22,3 @@ std::string formatReply(const int         code,
                         const std::string &text);
 
 std::string intToString(int n);
-std::string getClientIP(int fd);

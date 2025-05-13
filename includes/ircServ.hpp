@@ -5,9 +5,11 @@
 ** File       : includes/ircServ.hpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-21
-** Edited     : 2025-05-12
+** Edited     : 2025-05-13
 ** Description: The inclusion head for the project
 */
+
+//TODO: Comment functions at the end of the project.
 
 #pragma once
 

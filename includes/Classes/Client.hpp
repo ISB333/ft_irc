@@ -49,10 +49,9 @@ class Client {
         void incrementAttempt(void);
         void updateActivity(void);
         
-        void toggleAuthentication(const bool change);
         bool isFullyRegistered(void) const;
 
-        private:
+    private:
         const int    fd_;
         bool       auth_;
         bool   authPass_;

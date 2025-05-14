@@ -17,7 +17,7 @@ using namespace std;
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
 void	Handler::handlePassword(Client* client, const vector<string>& args) {
-	cout << "ME Handle PASS" << endl;
+	// cout << "PASSWORD:" << args[0] << endl;
 	if (args.size() > 1)
 		server_.reply(client, Replies::ERR_UNKNOWNERROR("*", "PASS", "Too many arguments"));
 	else if (!args.empty() && !args[0].empty())
@@ -38,6 +38,7 @@ bool isValidNickname(const string& nickname) {
 }
 
 void	Handler::handleNick(Client* client, const vector<string>& args) {
+	// cout << "NICKNAME:" << args[0] << endl;
 	if (!client->isPassAuth()) {
 		server_.reply(client, Replies::ERR_NOTREGISTERED("NICK"));
     	return;
@@ -61,7 +62,6 @@ void	Handler::handleNick(Client* client, const vector<string>& args) {
 }
 
 bool isValidUsername(const string& username) {
-	cout << username << endl;
 	if (username.empty())
 		return false;
     for (size_t i = 0; i < username.length(); ++i) {
@@ -105,9 +105,12 @@ void	Handler::handleUser(Client* client, const vector<string>& args) {
 				server_.reply(client, Replies::ERR_ERRONEUSREALNAME(args[3]));
 				return;
 			}
+			// cout << "USERNAME:" << args[0] << endl;
+			// cout << "REALNAME:" << args[3] << endl;
 			client->setUsername(args[0]);
 			client->setRealname(args[3]);
 			client->authenticate(true);
+			server_.reply(client, ":server 001 " + client->getNickname() + " :Welcome to the IRC!\r\n");
 		}
 		else {
 			server_.reply(client, Replies::ERR_ERRONEUSUSERNAME(args[0]));

@@ -27,19 +27,6 @@ Handler::Handler(Server& server) : server_(server) {
     commandMap_["KICK"]    = &Handler::handleKick;
 }
 
-vector<string> splitMessage(const string &message) {
-    vector<string> tokens;
-    string token;
-    istringstream tokenStream(message);
-    
-    while (getline(tokenStream, token, ' ')) {
-        if (!token.empty()) {
-            tokens.push_back(token);
-        }
-    }
-    return tokens;
-}
-
 void Handler::dispatchCommand(Client* client, const string& message) {
     Command cmd = parseLine(message); 
 

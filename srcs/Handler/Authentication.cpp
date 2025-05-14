@@ -61,6 +61,7 @@ void	Handler::handleNick(Client* client, const vector<string>& args) {
 }
 
 bool isValidUsername(const string& username) {
+	cout << username << endl;
 	if (username.empty())
 		return false;
     for (size_t i = 0; i < username.length(); ++i) {
@@ -99,12 +100,12 @@ void	Handler::handleUser(Client* client, const vector<string>& args) {
     	return;
 	}
 	else {
-		if (isValidUsername(args[1])) {
+		if (isValidUsername(args[0])) {
 			if (!isValidRealname(args[3])) {
 				server_.reply(client, Replies::ERR_ERRONEUSREALNAME(args[3]));
 				return;
 			}
-			client->setUsername(args[1]);
+			client->setUsername(args[0]);
 			client->setRealname(args[3]);
 			client->authenticate(true);
 		}

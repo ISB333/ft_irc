@@ -46,9 +46,9 @@ int main(int argc, char *argv[]) {
 		// ircServ(port, password);
         exit(EXIT_SUCCESS);
     } catch (const exception &error) {
-        cerr << "SERVER SHUTDOWN - Error encountered\n" << error.what() << endl;
+        LOG_ERROR("SERVER SHUTDOWN: " + string(error.what()));
         exit(EXIT_FAILURE);
-    }
+    };
 };
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //

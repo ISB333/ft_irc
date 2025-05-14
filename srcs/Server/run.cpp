@@ -4,12 +4,11 @@
 ** File       : srcs/Server/run.cpp
 ** Author     : aheitz
 ** Created    : 2025-05-07
-** Edited     : 2025-05-13
+** Edited     : 2025-05-14
 ** Description: Main server operation
 */
 
 #include "ircServ.hpp"
-#include <sys/socket.h>
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
@@ -17,9 +16,9 @@ using namespace std;
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-//TODO: Check that pollfds[0] is the listening socket.
-//TODO: Manage SIGPIPE.
-//TODO: Reset revent to 0.
+//TODO: - Comments functions.
+
+// │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
 /**
  * @brief Main server operation
@@ -27,45 +26,49 @@ using namespace std;
  */
 void Server::run() {
     while (true) {
-        if (poll(&pollfds_[0], pollfds_.size(), POLL_TIMEOUT) lesser 0) {
+        if (pollfds_.empty() or pollfds_[0].fd not_eq socket_ or not (pollfds_[0].events bitand POLLIN)) {
+            throw runtime_error("Invariant `pollfds_[0` is broken and is no longer the listening socket");
+        } else if (poll(&pollfds_[0], pollfds_.size(), POLL_TIMEOUT) lesser 0) {
             if (errno eq EINTR)
                 continue;
-            cerr << "poll() failed: " << strerror(errno) << endl;
-            break;
+            throw runtime_error("poll() failed: " + string(strerror(errno)));
         } else {
-            if (pollfds_[0].revents & POLLIN)   onClientConnection();
+            if (pollfds_[0].revents bitand POLLIN)   onClientConnection();
 
             for (size_t i = 1; i lesser pollfds_.size(); i++) {
-                const short revents = pollfds_[i].revents;
-                const int   fd      = pollfds_[i].fd;
+                const int  fd  = pollfds_[i].fd;
+                short     &rev = pollfds_[i].revents;
 
-                if (revents & (POLLERR | POLLHUP | POLLNVAL))   {
-                    if      (revents & POLLERR)     removeClient(fd, "ERROR :Closing Link: " + string(strerror(errno)));
-                    else if (revents & POLLHUP)     removeClient(fd, "ERROR :Closing Link: Hangup");
-                    else if (revents & POLLNVAL)    removeClient(fd, "ERROR :Closing Link: Invalid FD");
+                if (rev bitand (POLLERR bitor POLLHUP bitor POLLNVAL))   {
+                    if      (rev bitand POLLERR)    removeClient(fd, "ERROR :Closing Link: " + string(strerror(errno)));
+                    else if (rev bitand POLLHUP)    removeClient(fd, "ERROR :Closing Link: Hangup");
+                    else if (rev bitand POLLNVAL)   removeClient(fd, "ERROR :Closing Link: Invalid FD");
                     --i; continue;
                 };
-                if (revents & POLLIN)			    onClientReadable(fd);
-                if (revents & POLLOUT)              onClientWritable(fd);
+                if (rev bitand (POLLIN  bitor POLLRDNORM))  onClientReadable(fd);
+                if (rev bitand (POLLOUT bitor POLLWRNORM))  onClientWritable(fd);
+
+                rev = 0;
             };
-            disconnectInactives(); //TODO: Possible return management.
+            LOG_DEBUG(intToString(disconnectInactives()) + " clients disconnected due to inactivity");
         };
 	};
 };
 
-/**
- * @brief Registers and initializes a new client on the server
- * 
- */
 void Server::onClientConnection(void) {
     struct sockaddr_in addr;
     socklen_t          addr_len = sizeof(addr);
     const int          clientFd = accept(socket_, reinterpret_cast<struct sockaddr*>(&addr), &addr_len);
 
-    if (clientFd lesser 0) { cerr << "accept() failed: " << strerror(errno) << endl; }
+    if (clientFd lesser 0) { LOG_WARNING("accept() failed: " + string(strerror(errno))); }
     else {
+        #ifdef SO_NOSIGPIPE
+        int opt = 1;
+        if (setsockopt(clientFd, SOL_SOCKET, SO_NOSIGPIPE, &opt, sizeof(opt)) lesser 0)
+            LOG_WARNING("SIGPIPE blockage configuration failed for client " + intToString(clientFd) + ": " + string(strerror(errno)));
+        #endif
         if (fcntl(clientFd, F_SETFL, O_NONBLOCK) lesser 0) {
-            cerr << "fcntl() failed on fd " << clientFd << ": " << strerror(errno) << endl;
+            LOG_WARNING("fcntl() failed on fd " + intToString(clientFd) + ": " + strerror(errno));
             close(clientFd);
         } else {
             Client *newClient  = new Client(clientFd);
@@ -79,11 +82,11 @@ void Server::onClientConnection(void) {
             try {
                 pollfds_.push_back(pfd);
 
-                cout << "New client connected, fd=" << clientFd
-                     << " from " << inet_ntoa(addr.sin_addr)
-                     << ":" << ntohs(addr.sin_port) << endl;
+                LOG_INFO("New client connected, fd=" + intToString(clientFd)
+                                + " from " + inet_ntoa(addr.sin_addr)
+                                + ':'      + intToString(ntohs(addr.sin_port)));
             } catch (const bad_alloc &error) {
-                cerr << "push_back failed: " << error.what() << endl;
+                LOG_WARNING("push_back failed: " + string(error.what()));
                 close(clientFd);
                 delete newClient;
             };
@@ -91,11 +94,6 @@ void Server::onClientConnection(void) {
     };
 };
 
-/**
- * @brief Processing instructions received by a client
- * 
- * @param fd The client descriptor
- */
 void Server::onClientReadable(const int fd) {
     Client *client = clients_[fd];
     char    buffer[IRC_LIMIT];
@@ -113,19 +111,17 @@ void Server::onClientReadable(const int fd) {
     };
 };
 
-//TODO: Factorize dirty barbarian!
-
-/**
- * @brief Processing instructions sent by a client
- * 
- * @param fd The client descriptor
- */
 void Server::onClientWritable(const int fd) {
     Client       *cli = clients_[fd];
 
     while (not cli->getOutput().empty()) {
-        const string  &buf  = cli->getOutput();
-        const ssize_t  sent = send(fd, buf.c_str(), buf.size(), MSG_NOSIGNAL);
+        const string  &buf = cli->getOutput();
+
+        #ifdef MSG_NOSIGNAL
+            ssize_t sent = send(fd, buf.c_str(), buf.size(), MSG_NOSIGNAL);
+        #else
+            ssize_t sent = send(fd, buf.c_str(), buf.size(), 0);
+        #endif
 
         if ((sent lesser 0 and not (errno eq EAGAIN or errno eq EWOULDBLOCK)) or not sent) {
             removeClient(fd, "");
@@ -154,11 +150,6 @@ void Server::onClientWritable(const int fd) {
     };
 };
 
-/**
- * @brief Removes POLLOUT flag from socket events
- * 
- * @param fd The descriptor to remove POLLOUT from
- */
 void Server::removePollout(const int fd) {
     for (size_t i = 1; i lesser pollfds_.size(); i++)
         if (pollfds_[i].fd eq fd) {

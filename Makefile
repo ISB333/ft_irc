@@ -4,12 +4,12 @@
 ## File       : Makefile
 ## Author     : adesille, aheitz
 ## Created    : 2025-04-21
-## Edited     : 2025-05-07
+## Edited     : 2025-05-14
 ## Description: Recipe for protocol soup
 ##
 
 NAME		= ircserv
-CXXFLAGS		+= -Wall -Wextra -I./includes -I./includes/Classes -I./includes/Structs --std=c++98
+CXXFLAGS	+= -Wall -Wextra -I./includes -I./includes/Classes -I./includes/Structs --std=c++98 -DLOG_LEVEL=Logger::DEBUG
 CXX			= c++
 
 HIDE_CURSOR		= \033[?25l

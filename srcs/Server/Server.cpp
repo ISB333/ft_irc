@@ -4,7 +4,7 @@
 ** File       : srcs/Server/Server.cpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-05-13
+** Edited     : 2025-05-14
 ** Description: Definitions of server functions
 */
 
@@ -12,9 +12,6 @@
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-//TODO: To do when I understand what Alibaba has done:
-//TODO: Manage revents.
-//TODO: IRC notifications before socket closure.
 //TODO: Dump correctly on POLLWRNORM
 //TODO: Delete inactive clients after collecting all their IDs.
 //TODO: Send PING to client to disconnect them in case of blocking.
@@ -74,6 +71,10 @@ void Server::setupSocket(void) {
         throw runtime_error("Port reuse configuration failed: " + string(strerror(errno)));
     if (setsockopt(socket_, IPPROTO_TCP, TCP_NODELAY, &opt, sizeof(opt)) lesser 0)
         throw runtime_error("Nagle deactivation configuration failed: " + string(strerror(errno)));
+    #ifdef SO_NOSIGPIPE
+        if (setsockopt(socket_, SOL_SOCKET, SO_NOSIGPIPE, &opt, sizeof(opt)) lesser 0)
+            throw runtime_error("SIGPIPE blockage configuration failed: " + string(strerror(errno)));
+    #endif
 
     if (fcntl(socket_, F_SETFL, O_NONBLOCK) lesser 0)
         throw runtime_error("Server socket configuration to avoid blockages failed: " + string(strerror(errno)));

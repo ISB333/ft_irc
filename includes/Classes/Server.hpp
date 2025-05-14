@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Server.hpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-05-12
+** Edited     : 2025-05-14
 ** Description: Every server deserves a structure to track their data
 */
 
@@ -41,6 +41,7 @@ class Server {
         };
 
         void reply(Client *cli, const std::string &msg);
+        void broadcastQuit(Client *cli, const std::string &reason);
 
     private:
         const int                        port_;

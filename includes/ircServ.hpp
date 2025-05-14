@@ -19,6 +19,7 @@
 #include "libraries.hpp"
 #include "operators.hpp"
 #include "macros.hpp"
+#include "log.hpp"
 
 //FIXME: Remove ALL namespaces from headers.
 using namespace std;

@@ -67,11 +67,14 @@ $(OBJ_DIR)/%.o : %.cpp
 		echo "$(YELLOW)\nCompiling ircserv files...$(DEFAULT)"; \
 	fi
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
-
+	@bash ./.scripts/.progress.sh
 
 clean :
-# @rm -rf $(OBJ_DIR) $(DEPFILES)
-	rm -rf $(OBJS)
+	@find $(OBJ_DIR) -type f 2>/dev/null | while read -r FILE; do       \
+		rm -f "$$FILE";                                                 \
+		COMPILED_FILES=$$(find $(OBJ_DIR) -type f -name "*.o" | wc -l); \
+		bash ./.scripts/.progress.sh;                                   \
+	done
 	@echo "$(DARK_GREEN)\nEvery files are cleaned$(DEFAULT)"
 
 fclean : clean

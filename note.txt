@@ -1,1 +1,7 @@
 https://quicknote.io/e5f0ce90-1ea0-11f0-ac0d-3950307d340c/edit?
+
+launch ircServ
+
+then 
+irssi
+/connect localhost port pass

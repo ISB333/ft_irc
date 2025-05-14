@@ -42,11 +42,11 @@ void	Handler::handleNick(Client* client, const vector<string>& args) {
 		server_.reply(client, Replies::ERR_NOTREGISTERED("NICK"));
     	return;
 	}
-	if (args.empty() || args[1].empty()) {
+	else if (args.empty()) {
 		server_.reply(client, Replies::ERR_NEEDMOREPARAMETERS("NICK"));
 		return;
 	}
-	if (server_.isNicknameAlreadyUsed(args[0])) {
+	else if (server_.isNicknameAlreadyUsed(args[0])) {
 		server_.reply(client, Replies::ERR_NICKNAMEINUSE(args[0]));
     	return;
 	}
@@ -90,7 +90,11 @@ void	Handler::handleUser(Client* client, const vector<string>& args) {
 		server_.reply(client, Replies::ERR_NOTREGISTERED("USER"));
     	return;
 	}
-	if (args.empty() || args.size() < 4) {
+	else if (!client->getUsername().empty()) {
+		server_.reply(client, Replies::ERR_ALREADYREGISTERED());
+		return;
+	}
+	else if (args.empty() || args.size() < 4) {
 		server_.reply(client, Replies::ERR_NEEDMOREPARAMETERS("USER"));
     	return;
 	}

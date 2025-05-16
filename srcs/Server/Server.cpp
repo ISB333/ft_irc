@@ -4,7 +4,7 @@
 ** File       : srcs/Server/Server.cpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-05-14
+** Edited     : 2025-05-16
 ** Description: Definitions of server functions
 */
 
@@ -32,8 +32,17 @@ Server::Server(const int port, const std::string& password) : port_(port), passw
                                                               handler_(new Handler(*this)),
                                                               pollfds_(),  channels_(),
                                                               clients_(),  banned_() {
+    LOG_INFO("Server is starting...");
     signal(SIGPIPE, SIG_IGN);
+    signal(SIGTERM, stopServer);
+    signal(SIGINT,  stopServer);
+    signal(SIGHUP,  stopServer);
     setupSocket();
+    try {
+        loadServer();
+    } catch(...) {
+        LOG_WARNING("Unable to load!");
+    };
 };
 
 /**

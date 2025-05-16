@@ -80,28 +80,28 @@ Client *Channel::getClient(const int clientFd) const { return isMember(clientFd)
  * Tries to join a server, throws a runtime exception if the client is not accepted
  */
  void Channel::join(Client *cli, const string &providedKey) {
-    int    const fd   = cli->getFd();
-    string const nick = cli->getNickname();
-    string       err;
+    int    const fd       = cli->getFd();
+    string const nickname = cli->getNickname();
+    string            err;
 
     if (isMember(fd))                                               err = ERR_MEMBER;
     else if (userLimit_ and members_.size() at_least userLimit_)    err = ERR_LIMIT;
-    else if (inviteOnly_ and not isInvited(fd))                     err = ERR_INVITE;
+    else if (inviteOnly_ and not isInvited(nickname))               err = ERR_INVITE;
     else if (not key_.empty() and providedKey not_eq key_)          err = ERR_KEY;
 
-    if (not err.empty()) { LOG_WARNING("@" + nick + ": cannot join " + name_ + " - " + err);
-                           if      (err eq ERR_MEMBER)    throw runtime_error(Replies::ERR_USERONCHANNEL(nick,  name_));
-                           else if (err eq ERR_LIMIT)     throw runtime_error(Replies::ERR_CHANNELISFULL(nick,  name_));
-                           else if (err eq ERR_INVITE)    throw runtime_error(Replies::ERR_INVITEONLYCHAN(nick, name_));
-                           else if (err eq ERR_KEY)       throw runtime_error(Replies::ERR_BADCHANNELKEY(nick,  name_)); };
+    if (not err.empty()) { LOG_WARNING("@" + nickname + ": cannot join " + name_ + " - " + err);
+                           if      (err eq ERR_MEMBER)    throw runtime_error(Replies::ERR_USERONCHANNEL(nickname,  name_));
+                           else if (err eq ERR_LIMIT)     throw runtime_error(Replies::ERR_CHANNELISFULL(nickname,  name_));
+                           else if (err eq ERR_INVITE)    throw runtime_error(Replies::ERR_INVITEONLYCHAN(nickname, name_));
+                           else if (err eq ERR_KEY)       throw runtime_error(Replies::ERR_BADCHANNELKEY(nickname,  name_)); };
 
     members_[fd] = cli;
-    LOG_INFO("@" + cli->getNickname() + " joined " + name_);
+    LOG_INFO("@" + nickname + " joined " + name_);
 
-    if (inviteOnly_ and isInvited(fd))
-        removeInvitation(fd);
+    if (inviteOnly_ and isInvited(nickname))
+        removeInvitation(nickname);
 
     if (operators_.empty()) { operators_[fd] = cli;
-                              LOG_INFO("@" + cli->getNickname() + " claimed operator role on " + name_);
+                              LOG_INFO("@" + nickname + " claimed operator role on " + name_);
     };
 };

@@ -4,12 +4,14 @@
 ** File       : srcs/main.cpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-21
-** Edited     : 2025-04-22
+** Edited     : 2025-05-16
 ** Description: TO BE DEFINED
 */
 //TODO: Define header description.
 
 #include "ircServ.hpp"
+#include "log.hpp"
+#include "macros.hpp"
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
@@ -25,6 +27,11 @@ static int  parsePort(const char asciiPort[]);
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
+/**
+ * Tells the server if it should stop
+ */
+volatile sig_atomic_t g_stop = 0;
+
 //TODO: Complete and document the main.
 //TODO: Turning main into a nightmare.
 /**
@@ -35,6 +42,7 @@ static int  parsePort(const char asciiPort[]);
  * @return int 
  */
 int main(int argc, char *argv[]) {
+    LOG_DEBUG("Process PID=" + intToString(getpid()));
     try {
         checkArgc(argc);
         int    port     = parsePort(argv[1]);   (void)port; //TODO: Remove this instruction.
@@ -43,7 +51,8 @@ int main(int argc, char *argv[]) {
 
 		Server server(port, password);
 		server.run();
-		// ircServ(port, password);
+        server.saveServer();
+		LOG_INFO(string(SERVER_NAME) + " is now closed");
         exit(EXIT_SUCCESS);
     } catch (const exception &error) {
         LOG_ERROR("SERVER SHUTDOWN: " + string(error.what()));

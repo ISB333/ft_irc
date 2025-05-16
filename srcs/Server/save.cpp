@@ -28,12 +28,6 @@ using namespace std;
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-/**
- * @brief Writes and crypts the length of a string and its value to a file
- *
- * @param file The file to write to
- * @param value The data to be saved
- */
 static inline void writeData(ostream &file, const string &value) {
     const uint32_t length = value.length();
     uint32_t cryptLength  = length;
@@ -50,13 +44,6 @@ static inline void writeData(ostream &file, const string &value) {
     file.write(cryptValue.data(), length);
 };
 
-/**
- * @brief Writes and crypts a data value to a file
- *
- * @tparam T Can take any type (except string, which has its own overload)
- * @param file The file to write to
- * @param value The data to be saved
- */
 template<typename T>
 static inline void writeData(ostream &file, T value) {
     unsigned char *conversion = reinterpret_cast<unsigned char *>(&value);
@@ -67,47 +54,53 @@ static inline void writeData(ostream &file, T value) {
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-/**
- * @brief Saves all channels in a binary file
- * 
- */
 void Server::saveServer(void) const {
-    ofstream saveFile(".save/channels.bin", ios::binary);
+    LOG_WARNING("SERVER IS SAVING. RIGHTS FOR EACH CHANNEL WILL PASS TO THE FIRST PERSON JOINING AFTER REBOOTING");
+
+    ofstream saveFile(".save.bin", ios::binary);
     if (not saveFile.is_open())
-        throw runtime_error("Failed to open backup file");
+        throw runtime_error("Failed to open save file");
 
-    for (map<string, Channel *>::const_iterator it = channels_.begin(); it not_eq channels_.end(); it++) {
-        const Channel *channel = it->second;
+    for (map<string, Channel *>::const_iterator it = channels_.begin();
+                                                it not_eq channels_.end();
+                                                it++) {
+        const Channel                *ch = it->second;
+        const string               &name = ch->getName();
+        const string              &topic = ch->getTopic();
+        const string                &key = ch->getKey();
+        const bool               invMode = ch->isInviteOnly();
+        const bool               resMode = ch->isTopicRestricted();
+        const size_t               limit = ch->getUserLimit();
+        const map<int, Client *> members = ch->getMembers();
+        const set<string>        invited = ch->getInvitedMembers();
+        const size_t               users = members.size() + invited.size();
 
-        writeData(saveFile, channel->getName());
-        writeData(saveFile, channel->getTopic());
-        writeData(saveFile, channel->getKey());
-        saveFile.put(channel->isInviteOnly()      xor KEY);
-        saveFile.put(channel->isTopicRestricted() xor KEY);
-        writeData(saveFile, channel->getUserLimit());
+        LOG_DEBUG("* Saving " + name + " with topic: " + (not topic.empty() ? topic : "nothing"));
 
-        writeData(saveFile, channel->getMembers().size());
-        for (map<int, Client *>::const_iterator mem = channel->getMembers().begin(); mem not_eq channel->getMembers().end(); mem++)
-            writeData(saveFile, mem->first);
+        if (not key.empty())    LOG_DEBUG("- Maintaining keyword policy");
+        if (invMode)            LOG_DEBUG("- Invite mode active, " + intToString(users) + " members present and in queue will be reinvited");
+        if (resMode)            LOG_DEBUG("- Maintaining restriction mode");
+        if (limit)              LOG_DEBUG("- Imposed limit of " + intToString(limit) + " will be maintained");
 
-        writeData(saveFile, channel->getOperators().size());
-        for (map<int, Client *>::const_iterator op = channel->getOperators().begin(); op not_eq channel->getOperators().end(); op++)
-            writeData(saveFile, op->first);
+        writeData(saveFile, name);
+        writeData(saveFile, topic);
+        writeData(saveFile, key);
+        saveFile.put(invMode xor KEY);
+        saveFile.put(resMode xor KEY);
+        writeData(saveFile, limit);
 
-        writeData(saveFile, channel->getInvitedMembers().size());
-        for (set<int>::const_iterator inv = channel->getInvitedMembers().begin(); inv not_eq channel->getInvitedMembers().end(); inv++)
-            writeData(saveFile, *inv);
+        writeData(saveFile, users);
+        for (map<int, Client *>::const_iterator mem = members.begin();
+                                                mem not_eq members.end();
+                                                mem++) { writeData(saveFile, mem->first); };
+        for (set<string>::const_iterator inv = invited.begin();
+                                         inv not_eq invited.end();
+                                         inv++) { writeData(saveFile, *inv); };
     };
 };
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-/**
- * @brief Reads and decrypts a saved dataset
- *
- * @param file The backup file
- * @return string Data in string format
- */
 static inline string readData(istream &file) {
     uint32_t length;
     file.read(reinterpret_cast<char *>(&length), sizeof(length));
@@ -129,13 +122,6 @@ static inline string readData(istream &file) {
     return data;
 };
 
-/**
- * @brief Reads and decrypts a saved dataset
- *
- * @tparam T Can take any type (except string, which has its own overload)
- * @param file The backup file
- * @return T Decrypted data
- */
 template<typename T>
 static inline T readData(istream &file) {
     T data;
@@ -152,53 +138,38 @@ static inline T readData(istream &file) {
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-/**
- * @brief Function for loading all server channels
- * 
- */
 void Server::loadServer(void) {
-    ifstream saveFile(".save/channels.bin", ios::binary);
+    LOG_INFO("Server is loading...");
+
+    ifstream saveFile(".save.bin", ios::binary);
     if (not saveFile.is_open())
         throw runtime_error("Failed to open backup file");
 
     while (saveFile.peek() not_eq char_traits<char>::eof()) {
-        string        name       = readData(saveFile), topic = readData(saveFile), key = readData(saveFile);
-        bool          inviteMode = saveFile.get() xor KEY, topicRestriction = saveFile.get() xor KEY;
-        size_t        userLimit  = readData<size_t>(saveFile);
+        string      name = readData(saveFile),
+                   topic = readData(saveFile),
+                     key = readData(saveFile);
+        bool     invMode = saveFile.get() xor KEY,
+                 resMode = saveFile.get() xor KEY;
+        size_t userLimit = readData<size_t>(saveFile);
 
         size_t count = readData<size_t>(saveFile);
-        set<int> members;
+        set<string> invited;
         for (size_t i = 0; i not_eq count; i++)
-            members.insert(readData<int>(saveFile));
+            invited.insert(readData(saveFile));
 
-        count = readData<size_t>(saveFile);
-        set<int> operators;
-        for (size_t i = 0; i not_eq count; i++)
-            operators.insert(readData<int>(saveFile));
+        Channel *ch = new Channel(name, NULL);
 
-        count = readData<size_t>(saveFile);
-        set<int> invited;
-        for (size_t i = 0; i not_eq count; i++)
-            invited.insert(readData<int>(saveFile));
+        if (not topic.empty())  ch->setTopic(topic);
+        if (not key.empty())    ch->setKey(key);
+        if (invMode)            ch->setInviteOnly(invMode);
+        if (resMode)            ch->setTopicRestricted(resMode);
+        if (userLimit)          ch->setUserLimit(userLimit);
 
-        Channel *channel = new Channel(name, NULL);
-        channel->setTopic(topic);
-        channel->setKey(key);
-        channel->setInviteOnly(inviteMode);
-        channel->setTopicRestricted(topicRestriction);
-        channel->setUserLimit(userLimit);
+        for (set<string>::const_iterator it = invited.begin();
+                                         it not_eq invited.end();
+                                         it++) { ch->inviteClient(*it); };
 
-        // for (set<int>::const_iterator it = members.begin(); it not_eq members.end(); it++) {
-        //     //TODO: Deal with client backup later. For now, heresy.
-        //     // channel->addClient(new Client(*it));
-        // };
-
-        for (set<int>::const_iterator it = operators.begin(); it not_eq operators.end(); it++)
-            channel->promoteOperator(*it);
-
-        for (set<int>::const_iterator it = invited.begin(); it not_eq invited.end(); it++)
-            channel->inviteClient(*it);
-
-        channels_[name] = channel;
+        channels_[name] = ch;
     };
 };

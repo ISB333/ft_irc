@@ -33,7 +33,8 @@ CHANNEL = ./includes/Classes/Channel
 HANDLER = ./srcs/Handler
 OBJ_DIR = .obj
 
-SRCS := $(SRC)/main.cpp               \
+SRCS :=	$(SRC)/main.cpp               \
+		$(SRC)/Replies.cpp            \
 		$(SERVER)/authenticate.cpp    \
 		$(SERVER)/disconnections.cpp  \
 		$(SERVER)/run.cpp             \
@@ -55,6 +56,7 @@ SRCS := $(SRC)/main.cpp               \
         $(HANDLER)/join.cpp           \
         $(HANDLER)/privMSG.cpp        \
         $(HANDLER)/processChName.cpp  \
+        $(SERVER)/stop.cpp            \
 
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
 

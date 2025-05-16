@@ -4,7 +4,7 @@
 ** File       : srcs/Server/run.cpp
 ** Author     : aheitz
 ** Created    : 2025-05-07
-** Edited     : 2025-05-15
+** Edited     : 2025-05-16
 ** Description: Main server operation
 */
 
@@ -26,7 +26,7 @@ using namespace std;
  */
 void Server::run() {
     LOG_INFO("Server successfully started on " + intToString(socket_) + ":" + intToString(port_));
-    while (true) {
+    while (not g_stop) {
         if (pollfds_.empty() or pollfds_[0].fd not_eq socket_ or not (pollfds_[0].events bitand POLLIN)) {
             throw runtime_error("Invariant `pollfds_[0` is broken and is no longer the listening socket");
         } else if (poll(&pollfds_[0], pollfds_.size(), POLL_TIMEOUT) lesser 0) {

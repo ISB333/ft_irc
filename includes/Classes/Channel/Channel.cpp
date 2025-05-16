@@ -20,7 +20,7 @@ Channel::Channel(const string &name, Client *owner) : name_(name),
                  members_  [fd] = owner;
                  operators_[fd] = owner;
                  LOG_INFO(name + " created by @" + owner->getNickname());
-    } else LOG_DEBUG(name + " loaded");
+    } else LOG_INFO("Loading " + name + "...");
 };
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
@@ -32,12 +32,10 @@ Channel::Channel(const string &name, Client *owner) : name_(name),
  */
 const string &Channel::getName(void) const { return name_; };
 
-/**
- * @brief Define a new channel topic
- * 
- * @param name Topic name
- */
-void Channel::setTopic(const string &name) { topic_ = name; };
+void Channel::setTopic(const string &name) {
+    LOG_DEBUG("\"" + name + "\" is the new topic of " + name_);
+    topic_ = name;
+};
 
 /**
  * @brief Confirms whether the channel already has a subject
@@ -61,26 +59,20 @@ const string &Channel::getTopic(void) const { return topic_; };
  */
 const string &Channel::getKey(void) const { return key_; };
 
-/**
- * @brief Define a new key for the channel
- * 
- * @param key Keyword
- */
-void Channel::setKey(const string &key) { key_ = key; };
+void Channel::setKey(const string &key) {
+    LOG_DEBUG("Key defined for " + name_);
+    key_ = key;
+};
 
-/**
- * @brief Enable (or not) invite mode for the channel
- * 
- * @param enable Activation (or non-activation) of the mode
- */
-void Channel::setInviteOnly(const bool enable) { inviteOnly_ = enable; };
+void Channel::setInviteOnly(const bool enable) {
+    LOG_DEBUG("Invite mode defined \"" + string(enable ? "true" : "false") + "\" for " + name_);
+    inviteOnly_ = enable;
+};
 
-/**
- * @brief Enable (or not) restricted topic mode for the channel
- * 
- * @param enable Activation (or non-activation) of the mode
- */
-void Channel::setTopicRestricted(const bool enable) { topicRestricted_ = enable; } ;
+void Channel::setTopicRestricted(const bool enable) {
+    LOG_DEBUG("Restricted mode defined \"" + string(enable ? "true" : "false") + "\" for " + name_);
+    topicRestricted_ = enable;
+};
 
 /**
  * @brief Getter for channel invite mode
@@ -98,12 +90,11 @@ bool Channel::isInviteOnly(void) const { return inviteOnly_; };
  */
 bool Channel::isTopicRestricted(void) const { return topicRestricted_; };
 
-/**
- * @brief Defines a limit on the number of users on the channel
- *
- * @param limit The limit value
- */
-void Channel::setUserLimit(const size_t limit) { userLimit_ = limit; };
+void Channel::setUserLimit(const size_t limit) {
+    if (limit)    LOG_DEBUG(name_ + " is now limited to " + intToString(limit) + " users");
+    else          LOG_DEBUG(name_ + " is now open to unlimited users");
+    userLimit_ = limit;
+};
 
 /**
  * @brief Getter to obtain the channel user limit

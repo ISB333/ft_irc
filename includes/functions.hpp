@@ -22,3 +22,5 @@ std::string formatReply(const int         code,
                         const std::string &text);
 
 std::string intToString(int n);
+
+extern "C" void stopServer(int signo);

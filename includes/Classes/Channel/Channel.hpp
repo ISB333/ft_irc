@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Channel/Channel.hpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-05-06
+** Edited     : 2025-05-16
 ** Description: Every channel deserves a structure to track their data
 */
 
@@ -53,10 +53,10 @@ class Channel {
         const std::map<int, Client*> &getOperators(void)                  const;
         Client                       *getClient(const int clientFd)       const;
 
-        void                inviteClient(const int clientFd);
-        void                removeInvitation(const int clientFd);
-        bool                isInvited(const int fd)               const;
-        const std::set<int> &getInvitedMembers(void)              const;
+        void                inviteClient(const string nickname);
+        void                removeInvitation(const string nickname);
+        bool                isInvited(const string nickname)      const;
+        const std::set<string> &getInvitedMembers(void)              const;
 
         void setMode(const char type, const bool set = true, const std::string &context = "");
     private:
@@ -65,7 +65,7 @@ class Channel {
         std::string                        key_;
         std::map<int, Client*>         members_;
         std::map<int, Client*>       operators_;
-        std::set<int>           invitedMembers_;
+        std::set<string>        invitedMembers_;
         bool                        inviteOnly_;
         bool                   topicRestricted_;
         size_t                       userLimit_;

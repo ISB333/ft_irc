@@ -1,42 +1,27 @@
-
 /* ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
 ** │  Project : ft_irc – IRC Server                                                                │
 ** └───────────────────────────────────────────────────────────────────────────────────────────────┘
-** File       : includes/ircServ.hpp
-** Author     : adesille, aheitz
-** Created    : 2025-04-21
+** File       : srcs/Server/stop.cpp
+** Author     : aheitz
+** Created    : 2025-05-16
 ** Edited     : 2025-05-16
-** Description: The inclusion head for the project
+** Description: Enables clean shutdown of server to save data
 */
 
-//TODO: Comment functions at the end of the project.
-//TODO: Logs must become RP at the end of the project.
-
-#pragma once
+#include "ircServ.hpp"
+#include "log.hpp"
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-#include "functions.hpp"
-#include "libraries.hpp"
-#include "globals.hpp"
-#include "operators.hpp"
-#include "macros.hpp"
-#include "log.hpp"
-
-//FIXME: Remove ALL namespaces from headers.
 using namespace std;
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-class Client;
-class Channel;
-class Server;
-class Handler;
-
-#include "Classes/Client.hpp"
-#include "Classes/Channel/Channel.hpp"
-#include "Classes/Server.hpp"
-#include "Classes/Handler.hpp"
-#include "Classes/Replies.hpp"
-
-#include "Structs/Command.hpp"
+/**
+ * Sets 'g_stop' variable to stop the server's main loop when used as callback for signals
+ */
+extern "C" void stopServer(int signo) {
+    LOG_DEBUG("Encountered SIG=" + intToString(signo));
+    LOG_WARNING("SERVER IS SHUTING DOWN...");
+    g_stop = 1;
+};

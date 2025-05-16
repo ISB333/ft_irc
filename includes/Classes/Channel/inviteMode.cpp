@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Channel/inviteMode.cpp
 ** Author     : aheitz
 ** Created    : 2025-04-28
-** Edited     : 2025-05-02
+** Edited     : 2025-05-16
 ** Description: Functions used in invite mode
 */
 
@@ -17,8 +17,8 @@
  * 
  * @param clientFd The client to invite
  */
- void Channel::inviteClient(const int clientFd) {
-    if (not isMember(clientFd)) invitedMembers_.insert(clientFd);
+ void Channel::inviteClient(const string nickname) {
+    if (invitedMembers_.find(nickname) eq invitedMembers_.end()) invitedMembers_.insert(nickname);
 };
 
 /**
@@ -26,7 +26,7 @@
  * 
  * @param clientFd The client to be removed
  */
-void Channel::removeInvitation(const int clientFd) { invitedMembers_.erase(clientFd); };
+void Channel::removeInvitation(const string nickname) { invitedMembers_.erase(nickname); };
 
 /**
  * @brief Getter to find out if a client is invited
@@ -35,11 +35,11 @@ void Channel::removeInvitation(const int clientFd) { invitedMembers_.erase(clien
  * @return true If invited
  * @return false Otherwise
  */
-bool Channel::isInvited(const int fd) const { return invitedMembers_.count(fd); };
+bool Channel::isInvited(const string nickname) const { return invitedMembers_.count(nickname); };
 
 /**
  * @brief Getter to obtain the invitation list
  * 
  * @return set<int> The complete invitation list
  */
-const set<int> &Channel::getInvitedMembers(void) const { return invitedMembers_; };
+const set<string> &Channel::getInvitedMembers(void) const { return invitedMembers_; };

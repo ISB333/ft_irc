@@ -4,8 +4,8 @@
 ** File       : includes/log.hpp
 ** Author     : aheitz
 ** Created    : 2025-05-14
-** Edited     : 2025-05-14
-** Description: TODO:
+** Edited     : 2025-05-16
+** Description: Print system for a "readable" server
 */
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
@@ -35,11 +35,11 @@ namespace Logger {
 
     inline const char *getId(const Level lvl) {
         switch (lvl) {
-            case DEBUG:   return "DEBUG";
-            case INFO:    return "INFO";
-            case WARNING: return "WARNING";
-            case ERROR:   return "ERROR";
-            default:      return "?";
+            case DEBUG:   return "[DEBUG]  ";
+            case INFO:    return "[INFO]   ";
+            case WARNING: return "[WARNING]";
+            case ERROR:   return "[ERROR]  ";
+            default:      return "[?]      ";
         };
     };
 
@@ -56,7 +56,7 @@ namespace Logger {
     inline void log(const Level lvl, const std::string &msg) {
         if (lvl at_least LOG_LEVEL)
             std::cerr << getColor(lvl)
-                      << '[' << getId(lvl) << "] "
+                      << getId(lvl) << ": "
                       << msg << RESET << std::endl;
     };
 };

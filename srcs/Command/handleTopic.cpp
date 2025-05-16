@@ -4,7 +4,7 @@
 ** File       : srcs/Command/handleTopic.cpp
 ** Author     : aheitz
 ** Created    : 2025-04-24
-** Edited     : 2025-05-13
+** Edited     : 2025-05-16
 ** Description: Topic server command management
 */
 
@@ -16,39 +16,65 @@ using namespace std;
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-/**
- * @brief Processes a client's TOPIC command
- * 
- * @param client The client calling the command
- * @param argv The arguments the client has passed to the command
- */
-void Handler::handleTopic(Client *client, const vector<string> &argv) {
-    const string clientNickname = client->getNickname();
+//TODO: Canal name MUST be checked!
 
-    cout << "HERE" << endl;
+void Handler::handleTopic(Client *cli, const vector<string> &argv) {
+    const string nick = cli->getNickname();
 
-    if (argv.empty() or argv.size() greater 2) {
-        client->appendOutput(argv.empty() ? formatReply(ERR_NEEDMOREPARAMS, clientNickname, "TOPIC", "Not enough parameters")
-            : formatReply(ERR_UNKNOWNMODE, clientNickname, "TOPIC", "Too many parameters"));
-    } else {
-        const int clientFd        = client->getFd();
-        const string &channelName = argv[0];
-        Channel *channel          = NULL;
-        try                         { channel = server_.getChannel(channelName); }
-        catch (const out_of_range&) { client->appendOutput(formatReply(ERR_NOSUCHCHANNEL, clientNickname, channelName, "No such channel")); return; };
+    if (argv.empty()) {
+        const string &reply = Replies::ERR_NEEDMOREPARAMETERS("TOPIC");
+        LOG_ERROR(reply);
+        server_.reply(cli, reply);
+        return;
+    };
+    
+    const int fd = cli->getFd();
+    const string &name = argv[0];
+    Channel *ch        = NULL;
 
-        if (not channel->isMember(clientFd)) {
-            client->appendOutput(formatReply(ERR_NOTONCHANNEL, clientNickname, channelName, "You're not on that channel"));
-        } else if (argv.size() eq 1) {
-            channel->hasTopic() ? client->appendOutput(formatReply(RPL_TOPIC,   clientNickname, channelName, channel->getTopic()))
-                                : client->appendOutput(formatReply(RPL_NOTOPIC, clientNickname, channelName, "No topic is set"));
-        } else if (channel->isTopicRestricted() and not channel->isOperator(clientFd)) {
-            client->appendOutput(formatReply(ERR_CHANOPRIVSNEEDED, clientNickname, channelName, "You're not channel operator"));
-        } else {
-            channel->setTopic(argv[1]);
-            string notification = ":" + client->getPrefix() + " TOPIC " + channelName + " :" + argv[1];
-            for (map<int, Client*>::const_iterator it = channel->getMembers().begin(); it != channel->getMembers().end(); it++)
-                it->second->appendOutput(notification);
+    try {
+        ch = server_.getChannel(name);
+    } catch (const out_of_range&) {
+        const string &reply = Replies::ERR_NOSUCHCHANNEL(nick, name);
+        LOG_ERROR(reply);
+        server_.reply(cli, reply);
+        return;
+    };
+
+    if (not ch->isMember(fd)) {
+        const string &reply = Replies::ERR_NOTONCHANNEL(nick, name);
+        LOG_WARNING(reply);
+        server_.reply(cli, reply);
+        return;
+    };
+    
+    if (argv.size() eq 1) {
+        const std::string &topic = ch->getTopic();
+        not topic.empty() ? server_.reply(cli, Replies::RPL_TOPIC(nick,   name, topic))
+                          : server_.reply(cli, Replies::RPL_NOTOPIC(nick, name));
+        LOG_DEBUG("@" + nick + " get `" + (not topic.empty() ? topic : "nothing") + "` from <TOPIC>");
+        return;
+    };
+
+    string topic = argv[1];
+    if (ch->isOperator(fd) or not ch->isTopicRestricted()) {
+        for (size_t i = 2; i lesser argv.size() and topic.size() at_most IRC_LIMIT; i++) {
+            topic += " " + argv[i];
         };
-    }
+
+        if (topic.size() greater IRC_LIMIT) {
+            LOG_ERROR("@" + nick + " get kicked from server for violating the send size in <TOPIC>");
+            server_.removeClient(fd, "ERROR :Closing Link: line too long");
+            return;
+        };
+        ch->setTopic(topic);
+
+        const string &reply = Replies::TOPIC(cli->getPrefix(), name, topic);
+        LOG_INFO(reply);
+        broadcast(ch, reply);
+    } else {
+        const string &reply = Replies::ERR_CHANOPRIVSNEEDED(nick, name);
+        LOG_WARNING(reply);
+        server_.reply(cli, reply);
+    };
 };

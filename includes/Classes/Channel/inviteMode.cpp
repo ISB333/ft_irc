@@ -35,7 +35,7 @@ void Channel::removeInvitation(const int clientFd) { invitedMembers_.erase(clien
  * @return true If invited
  * @return false Otherwise
  */
-bool Channel::isInvited(const int clientFd) const { return invitedMembers_.count(clientFd); };
+bool Channel::isInvited(const int fd) const { return invitedMembers_.count(fd); };
 
 /**
  * @brief Getter to obtain the invitation list

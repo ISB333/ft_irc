@@ -4,7 +4,7 @@
 ** File       : includes/libraries.hpp
 ** Author     : aheitz
 ** Created    : 2025-04-22
-** Edited     : 2025-05-10
+** Edited     : 2025-05-16
 ** Description: List of macros used throughout the project
 */
 
@@ -15,17 +15,10 @@
 #define CRLF        "\r\n"
 #define SPACE       " "
 
-#define RPL_NOTOPIC          331
-#define RPL_TOPIC            332
-#define ERR_NOSUCHCHANNEL    403
-#define ERR_NOTONCHANNEL     442
-#define ERR_NEEDMOREPARAMS   461
-#define ERR_UNKNOWNMODE      472
-#define ERR_CHANOPRIVSNEEDED 482
-
 #define KEY                  0x5A
 
 #define POLL_TIMEOUT         1000
 #define INACTIVITY_SECONDS   300
 
 #define IRC_LIMIT            512
+#define MAX_CH_SIZE          200

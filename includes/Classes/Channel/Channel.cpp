@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Channel/Channel.cpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-05-06
+** Edited     : 2025-05-16
 ** Description: Channel class member functions
 */
 
@@ -12,15 +12,16 @@
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-/**
- * @brief Construct a new Channel object
- * 
- * @param name Channel's name created
- */
-Channel::Channel(const string &name) : name_(name),
+Channel::Channel(const string &name, Client *owner) : name_(name),
                                        topic_(), key_(),  members_(), operators_(), invitedMembers_(),
                                        inviteOnly_(false), topicRestricted_(false),
-                                       userLimit_(0) {};
+                                       userLimit_(0)  {
+    if (owner) { const int  fd  = owner->getFd();
+                 members_  [fd] = owner;
+                 operators_[fd] = owner;
+                 LOG_INFO(name + " created by @" + owner->getNickname());
+    } else LOG_DEBUG(name + " loaded");
+};
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 

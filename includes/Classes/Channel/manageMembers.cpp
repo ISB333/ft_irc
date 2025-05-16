@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Channel/manageMembers.cpp
 ** Author     : aheitz
 ** Created    : 2025-04-28
-** Edited     : 2025-05-13
+** Edited     : 2025-05-16
 ** Description: All useful functions for managing members in the channel
 */
 
@@ -12,15 +12,12 @@
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
-/**
- * @brief Registers a new client on the channel
- * 
- * @param customer The client object to be saved
- */
-void Channel::addClient(Client* client) {
-    if (not isMember(client->getFd()))
-        members_[client->getFd()] = client;
-};
+#define ERR_MEMBER "already member"
+#define ERR_LIMIT  "channel is full"
+#define ERR_INVITE "not yet invited"
+#define ERR_KEY    "unable to provide keyword"
+
+// │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
 /**
  * @brief Removes a client from the channel
@@ -36,7 +33,7 @@ void Channel::removeClient(const int clientFd) { operators_.erase(clientFd); mem
  * @return true If so
  * @return false Otherwise
  */
-bool Channel::isMember(const int clientFd) const { return members_.count(clientFd); };
+bool Channel::isMember(const int fd) const { return members_.count(fd); };
 
 //TODO: Securing the operation here?
 /**
@@ -80,23 +77,31 @@ Client *Channel::getClient(const int clientFd) const { return isMember(clientFd)
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
 /**
- * @brief Tries client to join a channel, depending on parameters
- * 
- * @param client The client in question
- * @param providedKey A password specified by the client
+ * Tries to join a server, throws a runtime exception if the client is not accepted
  */
- void Channel::tryJoin(Client *client, const string &providedKey) {
-    if (isMember(client->getFd()))
-        throw runtime_error("Client already connected");
-    else if (userLimit_ and members_.size() at_least userLimit_) 
-        throw runtime_error("Channel already full");
-    else if (inviteOnly_ and not isInvited(client->getFd()))
-        throw runtime_error("Channel requires an invitation");
-    else if (not key_.empty() and providedKey not_eq key_)
-        throw runtime_error("A valid password is required");
-    else {
-        addClient(client);
-        if (inviteOnly_)
-            removeInvitation(client->getFd());
-    }   
+ void Channel::join(Client *cli, const string &providedKey) {
+    int    const fd   = cli->getFd();
+    string const nick = cli->getNickname();
+    string       err;
+
+    if (isMember(fd))                                               err = ERR_MEMBER;
+    else if (userLimit_ and members_.size() at_least userLimit_)    err = ERR_LIMIT;
+    else if (inviteOnly_ and not isInvited(fd))                     err = ERR_INVITE;
+    else if (not key_.empty() and providedKey not_eq key_)          err = ERR_KEY;
+
+    if (not err.empty()) { LOG_WARNING("@" + nick + ": cannot join " + name_ + " - " + err);
+                           if      (err eq ERR_MEMBER)    throw runtime_error(Replies::ERR_USERONCHANNEL(nick,  name_));
+                           else if (err eq ERR_LIMIT)     throw runtime_error(Replies::ERR_CHANNELISFULL(nick,  name_));
+                           else if (err eq ERR_INVITE)    throw runtime_error(Replies::ERR_INVITEONLYCHAN(nick, name_));
+                           else if (err eq ERR_KEY)       throw runtime_error(Replies::ERR_BADCHANNELKEY(nick,  name_)); };
+
+    members_[fd] = cli;
+    LOG_INFO("@" + cli->getNickname() + " joined " + name_);
+
+    if (inviteOnly_ and isInvited(fd))
+        removeInvitation(fd);
+
+    if (operators_.empty()) { operators_[fd] = cli;
+                              LOG_INFO("@" + cli->getNickname() + " claimed operator role on " + name_);
+    };
 };

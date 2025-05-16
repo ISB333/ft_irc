@@ -4,7 +4,7 @@
 ** File       : srcs/Command/handleMode.cpp
 ** Author     : aheitz
 ** Created    : 2025-04-29
-** Edited     : 2025-05-13
+** Edited     : 2025-05-15
 ** Description: Mode server command management
 */
 
@@ -26,18 +26,18 @@ void Handler::handleMode(Client *client, const vector<string> &argv) {
     const string clientNickname = client->getNickname();
 
     if (argv.size() lesser 2) {
-        client->appendOutput(formatReply(ERR_NEEDMOREPARAMS, clientNickname, "MODE", "Not enough parameters"));
+        client->appendOutput(formatReply(461, clientNickname, "MODE", "Not enough parameters"));
     } else {
         const string &channelName = argv[0];
         Channel *channel          = NULL;
         try                         { channel = server_.getChannel(channelName); }
-        catch (const out_of_range&) { client->appendOutput(formatReply(ERR_NOSUCHCHANNEL, clientNickname, channelName, "No such channel"));
+        catch (const out_of_range&) { client->appendOutput(formatReply(403, clientNickname, channelName, "No such channel"));
             return;
         };
 
         //TODO: Enhance with a member check first.
         if (not channel->isOperator(client->getFd())) {
-            client->appendOutput(formatReply(ERR_CHANOPRIVSNEEDED, clientNickname, channelName, "You're not channel operator"));
+            client->appendOutput(formatReply(482, clientNickname, channelName, "You're not channel operator"));
             return;
         };
 
@@ -66,9 +66,9 @@ void Handler::handleMode(Client *client, const vector<string> &argv) {
                         instructions += c;
                         args.push_back(argv[i]);
                     } else {
-                        client->appendOutput(formatReply(ERR_NEEDMOREPARAMS, clientNickname, "MODE", string("Not enough parameters for mode ") + c));
+                        client->appendOutput(formatReply(461, clientNickname, "MODE", string("Not enough parameters for mode ") + c));
                     };
-                } else client->appendOutput(formatReply(ERR_UNKNOWNMODE, clientNickname, channelName, string("Unknown mode: ") + c));
+                } else client->appendOutput(formatReply(742, clientNickname, channelName, string("Unknown mode: ") + c));
             };
         };
 

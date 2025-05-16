@@ -4,13 +4,11 @@
 ** File       : srcs/Client/C.cpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-05-13
+** Edited     : 2025-05-15
 ** Description: Client member functions
 */
 
 #include "ircServ.hpp"
-#include <cerrno>
-#include <unistd.h>
 
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
@@ -28,7 +26,7 @@ string setIp(const int fd) {
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
 Client::Client(const int fd) : fd_(fd), auth_(false), attempt_(0), ip_(setIp(fd)),
-                               username_(""), nickname_(""),
+                               username_(""), nickname_("someone"),
                                input_(""),    output_(""),
                                activity_(time(NULL)) {};
 

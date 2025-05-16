@@ -4,7 +4,7 @@
 ## File       : Makefile
 ## Author     : adesille, aheitz
 ## Created    : 2025-04-21
-## Edited     : 2025-05-14
+## Edited     : 2025-05-16
 ## Description: Recipe for protocol soup
 ##
 
@@ -53,7 +53,8 @@ SRCS := $(SRC)/main.cpp               \
 		$(HANDLER)/Handler.cpp        \
         $(HANDLER)/Authentication.cpp \
         $(HANDLER)/join.cpp           \
-        $(HANDLER)/privMSG.cpp
+        $(HANDLER)/privMSG.cpp        \
+        $(HANDLER)/processChName.cpp  \
 
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
 

@@ -4,7 +4,7 @@
 ** File       : includes/Classes/Server.hpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-23
-** Edited     : 2025-05-14
+** Edited     : 2025-05-15
 ** Description: Every server deserves a structure to track their data
 */
 
@@ -27,6 +27,8 @@ class Server {
         void    ban(const std::string &ip);
         void    passwdManager(Client *client, const std::string &password);
 
+        void addChannel(Channel *ch) { channels_[ch->getName()] = ch; }; //TODO: -> .CPP
+
         void    saveServer(void) const;
         void    loadServer(void);
 
@@ -43,6 +45,7 @@ class Server {
         void reply(Client *cli, const std::string &msg);
         void broadcastQuit(Client *cli, const std::string &reason);
 
+        void   removeClient(const int fd, const std::string &reason);
     private:
         const int                        port_;
         const string                 password_;
@@ -61,7 +64,6 @@ class Server {
         void   onClientConnection(void);
         void   onClientReadable(const int fd);
         void   onClientWritable(const int fd);
-        void   removeClient(const int fd, const std::string &reason);
         size_t disconnectInactives(void);
         void   removePollout(const int fd);
 

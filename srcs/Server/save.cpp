@@ -4,7 +4,7 @@
 ** File       : srcs/Server/save.cpp
 ** Author     : aheitz
 ** Created    : 2025-05-02
-** Edited     : 2025-05-12
+** Edited     : 2025-05-16
 ** Description: Maintaining channels state for server-side persistence
 */
 
@@ -181,17 +181,17 @@ void Server::loadServer(void) {
         for (size_t i = 0; i not_eq count; i++)
             invited.insert(readData<int>(saveFile));
 
-        Channel *channel = new Channel(name);
+        Channel *channel = new Channel(name, NULL);
         channel->setTopic(topic);
         channel->setKey(key);
         channel->setInviteOnly(inviteMode);
         channel->setTopicRestricted(topicRestriction);
         channel->setUserLimit(userLimit);
 
-        for (set<int>::const_iterator it = members.begin(); it not_eq members.end(); it++) {
-            //TODO: Deal with client backup later. For now, heresy.
-            channel->addClient(new Client(*it));
-        };
+        // for (set<int>::const_iterator it = members.begin(); it not_eq members.end(); it++) {
+        //     //TODO: Deal with client backup later. For now, heresy.
+        //     // channel->addClient(new Client(*it));
+        // };
 
         for (set<int>::const_iterator it = operators.begin(); it not_eq operators.end(); it++)
             channel->promoteOperator(*it);

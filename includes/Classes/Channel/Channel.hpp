@@ -24,7 +24,7 @@
  */
 class Channel {
     public:
-        explicit Channel(const std::string& name);
+        explicit Channel(const std::string& name, Client *owner);
 
         const std::string &getName(void)          const;
         const std::string &getTopic(void)         const;
@@ -36,7 +36,7 @@ class Channel {
         size_t getUserLimit(void)                const;
 
         void setKey(const std::string &key);
-        void tryJoin(Client *client, const std::string &providedKey = "");
+        void join(Client *client, const std::string &providedKey = "");
 
         void setTopic(const std::string &name);
         bool hasTopic(void) const;
@@ -55,7 +55,7 @@ class Channel {
 
         void                inviteClient(const int clientFd);
         void                removeInvitation(const int clientFd);
-        bool                isInvited(const int clientFd)         const;
+        bool                isInvited(const int fd)               const;
         const std::set<int> &getInvitedMembers(void)              const;
 
         void setMode(const char type, const bool set = true, const std::string &context = "");

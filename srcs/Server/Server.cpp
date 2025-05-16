@@ -43,7 +43,7 @@ Server::Server(const int port, const std::string& password) : port_(port), passw
 Server::~Server(void) {
     //TODO: If you have too much time, don't hesitate to use the catches.
     for (std::map<int, Client*>::iterator cli = clients_.begin(); cli not_eq clients_.end(); cli++) {
-        try         { shutdown(cli->second->getFd(), SHUT_RDWR); delete cli->second; }
+        try         { shutdown(cli->second->getFd(), SHUT_RDWR);        delete cli->second;      }
         catch (...) {                                                                                    };
     }
     for (std::map<std::string, Channel*>::iterator ch = channels_.begin(); ch not_eq channels_.end(); ch++)

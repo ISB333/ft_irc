@@ -4,7 +4,7 @@
 ** File       : srcs/Command/Handler.cpp
 ** Author     : adesille, aheitz
 ** Created    : 2025-04-25
-** Edited     : 2025-05-12
+** Edited     : 2025-05-16
 ** Description: Handler class member functions
 */
 
@@ -32,6 +32,7 @@ void Handler::dispatchCommand(Client* client, const string& message) {
 
     map<string, CommandFunction>::iterator it = commandMap_.find(cmd.name);
     if (it != commandMap_.end()) {
+        LOG_DEBUG("@" + client->getNickname() + " try to <" + cmd.name + ">");
         (this->*(it->second))(client, cmd.argv);
     } else {
 		server_.reply(client, Replies::ERR_UNKNOWNCOMMAND(client->getNickname(), cmd.name));

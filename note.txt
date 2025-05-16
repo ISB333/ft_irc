@@ -5,3 +5,5 @@ launch ircServ
 then 
 irssi
 /connect localhost port pass
+
+TODO: - New operator when last one ragequit.

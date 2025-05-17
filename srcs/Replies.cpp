@@ -147,3 +147,23 @@ string Replies::ERR_CHANOPRIVSNEEDED(const string &nick, const string &chan) {
 };
 
 // │──────────────────────────────────────────│ TOPIC │─────────────────────────────────────────│ //
+
+// │─────────────────────────────────────────│ PRIVMSG │────────────────────────────────────────│ //
+
+string Replies::ERR_NORECIPIENT(const string& command) {
+    return "411 :No recipient given (" + command + ")";
+};
+
+string Replies::ERR_CANNOTSENDTOCHAN(const string& channel) {
+    return "404 " + channel + " :Cannot send to channel";
+};
+
+string Replies::ERR_NOSUCHNICK(const string& nickname) {
+    return "401 " + nickname + " :No such nick/channel";
+};
+
+string Replies::ERR_NOTEXTTOSEND() {
+    return "412 :No text to send";
+};
+
+// │─────────────────────────────────────────│ PRIVMSG │────────────────────────────────────────│ //

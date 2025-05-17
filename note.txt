@@ -7,3 +7,4 @@ irssi
 /connect localhost port pass
 
 TODO: - New operator when last one ragequit.
+TODO: - Verify that poll() is called everytime before each accept, read/recv, write/send

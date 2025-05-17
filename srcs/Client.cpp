@@ -26,7 +26,7 @@ string setIp(const int fd) {
 // │────────────────────────────────────────────────────────────────────────────────────────────│ //
 
 Client::Client(const int fd) : fd_(fd), auth_(false), attempt_(0), ip_(setIp(fd)),
-                               username_(""), nickname_("someone"),
+                               username_(""), nickname_(""),
                                input_(""),    output_(""),
                                activity_(time(NULL)) {};
 

@@ -46,6 +46,10 @@ class Server {
         void broadcastQuit(Client *cli, const std::string &reason);
 
         void   removeClient(const int fd, const std::string &reason);
+    
+        Channel *findChannel(const string &name) const;
+        Client *findClient(const string &nickname) const;
+
     private:
         const int                        port_;
         const string                 password_;

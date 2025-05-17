@@ -59,6 +59,8 @@ class Channel {
         const std::set<string> &getInvitedMembers(void)              const;
 
         void setMode(const char type, const bool set = true, const std::string &context = "");
+
+        void broadcast(const std::string &message) const;
     private:
         const std::string                 name_;
         std::string                      topic_;

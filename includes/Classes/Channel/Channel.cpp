@@ -102,3 +102,14 @@ void Channel::setUserLimit(const size_t limit) {
  * @return size_t The maximum number of users (0 if inactive)
  */
 size_t Channel::getUserLimit(void) const { return userLimit_; };
+
+/**
+ * @brief Broadcasts a message to all members of the channel
+ * 
+ * @param message The message to broadcast
+ */
+void Channel::broadcast(const string &message) const {
+    for (map<int, Client*>::const_iterator it = members_.begin(); it not_eq members_.end(); ++it) {
+        it->second->appendOutput(message);
+    }
+}

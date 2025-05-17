@@ -127,3 +127,31 @@ void Server::reply(Client *cli, const std::string &msg) {
             break;
         };
 };
+
+/**
+ * @brief Finds a channel by name without throwing an exception
+ * 
+ * @param name The name of the channel to search for
+ * @return Channel* The pointer to the channel, or NULL if not found
+ */
+Channel *Server::findChannel(const string &name) const {
+    map<string, Channel*>::const_iterator it = channels_.find(name);
+    
+    if (it eq channels_.end())
+        return NULL;
+    return it->second;
+}
+
+/**
+ * @brief Finds a client by nickname
+ * 
+ * @param nickname The nickname of the client to find
+ * @return Client* The pointer to the client, or NULL if not found
+ */
+Client *Server::findClient(const string &nickname) const {
+    for (map<int, Client*>::const_iterator it = clients_.begin(); it not_eq clients_.end(); ++it) {
+        if (it->second->getNickname() eq nickname)
+            return it->second;
+    }
+    return NULL;
+}

@@ -55,4 +55,13 @@ class Replies {
         static std::string ERR_CHANOPRIVSNEEDED(const std::string &nick, const std::string &chan);
 
         // │──────────────────────────────────────│ TOPIC │─────────────────────────────────────│ //
+
+        // │──────────────────────────────────────│ PRIVMSG │──────────────────────────────────────│ //
+
+        static std::string ERR_NORECIPIENT(const string& command);
+        static std::string ERR_CANNOTSENDTOCHAN(const string& channel);
+        static std::string ERR_NOSUCHNICK(const string& nickname);
+        static std::string ERR_NOTEXTTOSEND();
+
+        // │──────────────────────────────────────│ PRIVMSG │──────────────────────────────────────│ //
 };
